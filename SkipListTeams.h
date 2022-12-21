@@ -6,17 +6,20 @@
 #define WET2_SKIPLISTTEAMS_H
 
 #include "Team.h"
+#include "wet2util.h"
+
+#define INFINITY_NEGATIVE_ID (-1)
 
 class SkipListTeams {
 
 public:
 
-    SkipListTeams(): root(nullptr){}
+    SkipListTeams(): root(new Node(INFINITY_NEGATIVE_ID, nullptr)){}
     ~SkipListTeams();
 
-    void insert(int teamId, Team* team);
+    StatusType insert(int teamId, Team* team);
     Team* find(int teamId) const;
-    void remove(int teamId);
+    bool remove(int teamId);
 
 private:
     class Node {
@@ -26,7 +29,7 @@ private:
         Node& operator=(const Node& node) = default;
         ~Node() = default;
         void setRight(Node *rig) {right = rig;}
-        void setLeft(Node *dow) {down = dow;}
+        void setDown(Node *dow) { down = dow;}
         void setKey(int other_key){ key = other_key;}
         void setValue(Team* other_value){ value = other_value;}
         int key;
@@ -35,8 +38,13 @@ private:
         Node* down;
     };
 
-    Node root;
+    Node* root;
     int genZeroOrOne();
+
+    Node* recursiveInsert(int teamId, Team* team, Node* current_node);
+    Node* addNodeAfter(int teamId, Team* team, Node* left_node);
+    bool coinToss() const;
+    void removeNodeAfter(Node* left_node);
 
 };
 

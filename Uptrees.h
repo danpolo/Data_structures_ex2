@@ -6,29 +6,33 @@
 #define WET2_UPTREES_H
 
 #include "Player.h"
-#include "NodeUpTree.h"
 #include "Team.h"
 
 class Uptrees {
 
 public:
-    Uptrees(): array_of_players(new NodeUpTree<Player*>*[2]), num_of_players(0), size_of_array(2){}
+    Uptrees(): array_of_players(new NodePlayer*[2]), num_of_players(0), size_of_array(2){}
     ~Uptrees();
 
-    Player* find(int i) const;
-    void upTreeUnion(int i, int j);
+    Player* findPlayer(int player_id) const;
+    Team* findTeam(int player_id);
+    void upTreeUnion(Team* bigger_team, Team* smaller_team);
     void insert(Player* player, Team* team);
 
 
 private:
     class NodeTeam {
     public:
-        NodeTeam(int key, Team* value): key(key), value(value), num_of_sons_in_subtree(1){}
+        NodeTeam(int key, Team* value): key(key), value(value), num_of_sons_in_subtree(0){}
         NodeTeam(const NodeTeam& node) = default;
         NodeTeam& operator=(const NodeTeam& node) = default;
         ~NodeTeam() = default;
         void setKey(int other_key){ key = other_key;}
         void setValue(Team* other_value){ value = other_value;}
+
+        void addNumOfSonsInSubTree(int added_sons_amount) {
+            num_of_sons_in_subtree += added_sons_amount;
+        }
 
         int key;
         Team* value;
@@ -58,7 +62,7 @@ private:
     int num_of_players;
     int size_of_array;
 
-    int hashID(int i);
+    int hashID(int i) const;
     void allocateBiggerArray();
 };
 
