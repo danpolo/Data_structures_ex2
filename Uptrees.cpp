@@ -4,6 +4,8 @@
 
 #include "Uptrees.h"
 
+const int REMOVED_TEAM = -1;
+
 void Uptrees::insert(Player *player, Team* team) {
     if (size_of_array/2 < (num_of_players+1)){
         allocateBiggerArray();
@@ -89,4 +91,10 @@ void Uptrees::upTreeUnion(Team *bigger_team, Team *smaller_team) {
     (first_player_of_smaller_team_node->father_team->num_of_sons_in_subtree);
     delete first_player_of_smaller_team_node->father_team;
     first_player_of_smaller_team_node->setFatherTeam(new_root);
+}
+
+void Uptrees::removeTeamFromPlayer(int player_id) {
+    int index = hashID(player_id);
+    array_of_players[index]->father_team->key = REMOVED_TEAM;
+    array_of_players[index]->father_team->value = nullptr;
 }

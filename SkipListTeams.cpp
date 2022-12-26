@@ -5,6 +5,9 @@
 #include "SkipListTeams.h"
 
 StatusType SkipListTeams::insert(int teamId, Team *team) {
+    if (find(teamId) != nullptr) {
+        return StatusType::FAILURE;
+    }
     Node *new_node = recursiveInsert(teamId, team, root);
     if (new_node == nullptr) {
         return StatusType::SUCCESS;

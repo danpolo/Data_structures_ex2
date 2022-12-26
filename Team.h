@@ -6,7 +6,7 @@
 class Team
 {
 public:
-    Team(int teamID, int points = 0);
+    Team(int teamID);
     Team(const Team& other) = default;
     ~Team();
 

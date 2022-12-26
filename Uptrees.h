@@ -18,6 +18,7 @@ public:
     Team* findTeam(int player_id);
     void upTreeUnion(Team* bigger_team, Team* smaller_team);
     void insert(Player* player, Team* team);
+    void removeTeamFromPlayer(int player_id);
 
 
 private:

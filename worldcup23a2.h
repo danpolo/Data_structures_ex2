@@ -16,12 +16,15 @@
 #define WORLDCUP23A2_H_
 
 #include "wet2util.h"
+#include "SkipListTeams.h"
+#include "Uptrees.h"
+#include "Player.h"
+#include "Team.h"
 
 class world_cup_t {
 private:
-	//
-	// Here you may add anything you want
-	//
+	SkipListTeams m_teams_dictionary;
+    Uptrees m_all_players_dictionary;
 	
 public:
 	// <DO-NOT-MODIFY> {

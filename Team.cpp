@@ -1,6 +1,6 @@
 #include "Team.h"
 
-Team::Team(int teamID, int points) : teamID(teamID), m_points(points), m_strength(0),
+Team::Team(int teamID) : teamID(teamID), m_points(0), m_strength(0),
                                 m_games_played(0), m_number_of_players(0), m_goalKeeper_exist(0),
                                 first_player(nullptr), last_player(nullptr){}
 
