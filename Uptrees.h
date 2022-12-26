@@ -63,7 +63,7 @@ private:
     int num_of_players;
     int size_of_array;
 
-    int hashID(int i) const;
+    int hashID(int i, bool is_find) const;
     void allocateBiggerArray();
 };
 
