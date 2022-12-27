@@ -28,7 +28,7 @@ StatusType SkipListTeams::insert(int teamId, Team *team) {
 
 bool SkipListTeams::coinToss() const {
     int randomNumber;
-    randomNumber = 1 + std::rand() % 2;
+    randomNumber = std::rand() % 2;
 
     return randomNumber == 0;
 }
@@ -63,9 +63,6 @@ SkipListTeams::addNodeAfter(int teamId, Team *team, SkipListTeams::Node *left_no
 }
 
 Team *SkipListTeams::find(int teamId) const {
-    if (root->value == nullptr) {
-        return nullptr;
-    }
     Node *current_node = root;
 
     while (true) {
@@ -78,7 +75,7 @@ Team *SkipListTeams::find(int teamId) const {
         current_node = current_node->down;
     }
 
-    if (current_node->value->getID() == teamId) {
+    if (current_node->key != -1 and current_node->value->getID() == teamId) {
         return current_node->value;
     }
 
@@ -86,10 +83,6 @@ Team *SkipListTeams::find(int teamId) const {
 }
 
 bool SkipListTeams::remove(int teamId) {
-    if (root->value == nullptr) {
-        return false;
-    }
-
     Node *current_node = root;
 
     bool is_deleted = false;
@@ -122,6 +115,26 @@ bool SkipListTeams::remove(int teamId) {
 }
 
 void SkipListTeams::removeNodeAfter(SkipListTeams::Node *left_node) {
-    left_node->setRight(left_node->right->right);
-    delete left_node->right;
+    Node* node_to_delete = left_node->right;
+    left_node->setRight(node_to_delete->right);
+    delete node_to_delete;
+}
+
+SkipListTeams::~SkipListTeams() {
+
+}
+
+int SkipListTeams::get_height() const {
+    int height = 1;
+    Node* current_node = root;
+    while (current_node->right != nullptr and current_node->down != nullptr) {
+        if (current_node->down != nullptr) {
+            height++;
+            current_node = current_node->down;
+        }
+        else {
+            current_node = current_node->right;
+        }
+    }
+    return height;
 }
