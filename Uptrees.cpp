@@ -114,3 +114,7 @@ void Uptrees::removeTeamFromPlayer(int player_id) {
     array_of_players[index]->father_team->key = REMOVED_TEAM;
     array_of_players[index]->father_team->value = nullptr;
 }
+
+Uptrees::~Uptrees() {
+
+}
