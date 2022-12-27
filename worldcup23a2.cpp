@@ -62,7 +62,7 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
     }
 
     if (m_all_players_dictionary.findPlayer(playerId) != nullptr or m_teams_dictionary.find
-    (teamId) != nullptr) {
+    (teamId) == nullptr) {
         return StatusType::FAILURE;
     }
 
@@ -70,7 +70,7 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
         Player* new_player = new Player(playerId, teamId, spirit, gamesPlayed, ability, cards,
                                         goalKeeper);
         Team* new_player_team = m_teams_dictionary.find(teamId);
-        new_player_team->setLastPlayer(new_player);
+        //new_player_team->setLastPlayer(new_player);
         m_all_players_dictionary.insert(new_player, new_player_team);
     }
     catch (std::bad_alloc &) {

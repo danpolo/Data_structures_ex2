@@ -1,7 +1,6 @@
 //
 // Created by itayi on 21/12/2022.
 //
-#include <math.h>
 #include "Uptrees.h"
 
 const int REMOVED_TEAM = -1;
@@ -12,9 +11,10 @@ void Uptrees::insert(Player *player, Team* team) {
     if (size_of_array/2 < (num_of_players+1)){
         allocateBiggerArray();
     }
-    int index = hashID(player->getPlayerId(), false);
+    int index = hashID(player->getPlayerId(), false, array_of_players);
     NodePlayer* player_gets_in = new NodePlayer(player->getPlayerId(), player);
     array_of_players[index] = player_gets_in;
+    num_of_players++;
     if (team->getLastPlayer() == nullptr){
         NodeTeam* team_node = new NodeTeam(team->getID(), team);
         player_gets_in->setFatherTeam(team_node);
@@ -22,7 +22,7 @@ void Uptrees::insert(Player *player, Team* team) {
     }
     else {
         int last_player_id = team->getLastPlayer()->getPlayerId();
-        player_gets_in->setFatherPlayer(array_of_players[hashID(last_player_id, true)]);
+        player_gets_in->setFatherPlayer(array_of_players[hashID(last_player_id, true, array_of_players)]);
         NodePlayer* player_node = player_gets_in;
         while (player_node->father_team == nullptr) {
             player_node = player_node->father_player;
@@ -32,30 +32,37 @@ void Uptrees::insert(Player *player, Team* team) {
     }
 }
 
-int Uptrees::hashID(int i, bool is_find) const {  //constant hash function
+int Uptrees::hashID(int i, bool is_find, NodePlayer** players_array_to_hash) const {
+    //constant hash function
     double before_frac = (i * GOLD_FOR_HASH);
     double after_frac = before_frac - long(before_frac);
     int ans = floor(size_of_array * after_frac);
     if (!is_find) {
-        while (array_of_players[ans] != nullptr) {
-            if (array_of_players[ans]->value->getPlayerId() == i){
+        int counter = 0;
+        while (players_array_to_hash[ans] != nullptr and counter < size_of_array) {
+            if (players_array_to_hash[ans]->value->getPlayerId() == i){
                 return -1;   //player already exist
             }
             ans++;
+            ans %= size_of_array;
+            counter++;
         }
         return ans;
     }
-    while (array_of_players[ans] != nullptr){
-        if (array_of_players[ans]->value->getPlayerId() == i){
+    int counter = 0;
+    while (players_array_to_hash[ans] != nullptr and counter < size_of_array){
+        if (players_array_to_hash[ans]->value->getPlayerId() == i){
             return ans;
         }
         ans++;
+        ans %= size_of_array;
+        counter++;
     }
     return -1;  //player not found
 }
 
 Player *Uptrees::findPlayer(int player_id) const {
-    int index = hashID(player_id, true);
+    int index = hashID(player_id, true, array_of_players);
     if (index == -1) {
         return nullptr;
     }
@@ -66,11 +73,14 @@ Player *Uptrees::findPlayer(int player_id) const {
 void Uptrees::allocateBiggerArray() {
     NodePlayer** biggerArray = new NodePlayer*[size_of_array*2];
     int before_size_of_array = size_of_array;
-    size_of_array = 2*size_of_array;
+    size_of_array *= 2;
+    for (int i = 0; i < size_of_array; i++) {
+        biggerArray[i] = nullptr;
+    }
     for (int i = 0; i < before_size_of_array; i++) {
         if (array_of_players[i] != nullptr) {
             int temp_player_id = array_of_players[i]->value->getPlayerId();
-            biggerArray[hashID(temp_player_id, false)] = array_of_players[i];
+            biggerArray[hashID(temp_player_id, false, biggerArray)] = array_of_players[i];
         }
     }
     delete array_of_players;
@@ -78,7 +88,7 @@ void Uptrees::allocateBiggerArray() {
 }
 
 Team *Uptrees::findTeam(int player_id) {
-    int index = hashID(player_id, true);
+    int index = hashID(player_id, true, array_of_players);
     if (index == -1){
         return nullptr;
     }
@@ -104,14 +114,17 @@ void Uptrees::upTreeUnion(Team *bigger_team, Team *smaller_team) {
     int last_player_of_bigger_team = bigger_team->getLastPlayer()->getPlayerId();
 
     NodePlayer* first_player_of_smaller_team_node = array_of_players[hashID
-                                                                     (first_player_of_smaller_team, true)];
+                                                                     (first_player_of_smaller_team,
+                                                                      true, array_of_players)];
     NodePlayer* last_player_of_bigger_team_node = array_of_players[hashID
-                                                                   (last_player_of_bigger_team, true)];
+                                                                   (last_player_of_bigger_team,
+                                                                    true, array_of_players)];
     first_player_of_smaller_team_node->setFatherPlayer(last_player_of_bigger_team_node);
 
     int first_player_of_bigger_team = bigger_team->getFirstPlayer()->getPlayerId();
     NodePlayer* first_player_of_bigger_team_node = array_of_players[hashID
-                                                                    (first_player_of_bigger_team, true)];
+                                                                    (first_player_of_bigger_team,
+                                                                     true, array_of_players)];
     NodeTeam* new_root = first_player_of_bigger_team_node->father_team;
     new_root->addNumOfSonsInSubTree
     (first_player_of_smaller_team_node->father_team->num_of_sons_in_subtree);
@@ -120,11 +133,16 @@ void Uptrees::upTreeUnion(Team *bigger_team, Team *smaller_team) {
 }
 
 void Uptrees::removeTeamFromPlayer(int player_id) {
-    int index = hashID(player_id, true);
+    int index = hashID(player_id, true, array_of_players);
     array_of_players[index]->father_team->key = REMOVED_TEAM;
     array_of_players[index]->father_team->value = nullptr;
 }
 
 Uptrees::~Uptrees() {
 
+}
+
+Uptrees::Uptrees() : array_of_players(new NodePlayer*[2]), num_of_players(0), size_of_array(2) {
+    array_of_players[0] = nullptr;
+    array_of_players[1] = nullptr;
 }

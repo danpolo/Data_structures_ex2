@@ -5,13 +5,15 @@
 #ifndef WET2_UPTREES_H
 #define WET2_UPTREES_H
 
+#include <cmath>
+
 #include "Player.h"
 #include "Team.h"
 
 class Uptrees {
 
 public:
-    Uptrees(): array_of_players(new NodePlayer*[2]), num_of_players(0), size_of_array(2){}
+    Uptrees();
     ~Uptrees();
 
     Player* findPlayer(int player_id) const;
@@ -63,7 +65,7 @@ private:
     int num_of_players;
     int size_of_array;
 
-    int hashID(int i, bool is_find) const;
+    int hashID(int i, bool is_find, NodePlayer** players_array_to_hash) const;
     void allocateBiggerArray();
 };
 

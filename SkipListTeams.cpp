@@ -92,22 +92,24 @@ bool SkipListTeams::remove(int teamId) {
             current_node = current_node->right;
         }
 
-        if (current_node->right->value->getID() == teamId) {
+
+        if (current_node->right != nullptr and current_node->right->key == teamId) {
             removeNodeAfter(current_node);
             is_deleted = true;
-        }
-
-        if (root->right == nullptr) {
-            Node* new_root = root->down;
-            delete root;
-            root = new_root;
-            current_node = root;
         }
 
         if (current_node->down == nullptr) {
             break;
         }
-        current_node = current_node->down;
+        else if (root->right == nullptr) {
+            Node* new_root = root->down;
+            delete root;
+            root = new_root;
+            current_node = root;
+        }
+        else {
+            current_node = current_node->down;
+        }
     }
 
     return is_deleted;

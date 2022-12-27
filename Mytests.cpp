@@ -10,9 +10,19 @@
 #include "Player.h"
 #include "worldcup23a2.h"
 
-#define ASSERT(action, expected) if(action != expected) return false
+#define ASSERT_WITHOUT_MSG(action, expected) if(action != expected) return false
+#define ASSERT_WITH_MSG(action, expected, msg) if(action != expected) std::cout<<msg; return false
+#define GET_4TH_ARG(arg1, arg2, arg3, arg4, ...) arg4
+#define ASSERT_MACRO_CHOOSER(...) GET_4TH_ARG(__VA_ARGS__, ASSERT_WITH_MSG, ASSERT_WITHOUT_MSG,)
+#define ASSERT(...) ASSERT_MACRO_CHOOSER(__VA_ARGS__)(__VA_ARGS__)
 
-const int MAX_LINE_LENGTH = 75;
+#define TEST_PRINT(msg) if(test) std::cout<<msg
+
+#define IS_TEST false
+
+#define PRINT_FUNCTION_NAME if(not test) printFunctionName(__FUNCTION__)
+
+const int MAX_LINE_LENGTH = 50;
 
 void printFunctionName(std::string str) {
     std::string out;
@@ -32,17 +42,29 @@ void printFunctionName(std::string str) {
 }
 
 
-bool runAutomaticTests(const std::vector<bool (*)()> &tests) {
+bool runAutomaticTests(const std::vector<bool (*)(bool)> &tests, bool until_failure = false, bool
+until_stuck = false) {
     std::cout << "Running Automatic Tests" << std::endl;
     std::cout << std::string(MAX_LINE_LENGTH + 28, '-') << std::endl;
     bool all_tests_passed = true;
     for (auto test: tests) {
         try {
-            if (test()) {
-                std::cout << "\033[1;32m - TEST PASSED\033[0m" << std::endl;
-            } else {
+            if (until_stuck) {
+                while (true) {
+                    test(IS_TEST);
+                }
+            }
+            else if (until_failure) {
+                while(test(IS_TEST)){}
                 all_tests_passed = false;
-                std::cout << "\033[1;31m - TEST FAILED\033[0m" << std::endl;
+            }
+            else {
+                if (test(IS_TEST)) {
+                    std::cout << "\033[1;32m - TEST PASSED\033[0m" << std::endl;
+                } else {
+                    all_tests_passed = false;
+                    std::cout << "\033[1;31m - TEST FAILED\033[0m" << std::endl;
+                }
             }
         }
         catch (...) {
@@ -53,8 +75,8 @@ bool runAutomaticTests(const std::vector<bool (*)()> &tests) {
     return all_tests_passed;
 }
 
-bool addRemoveTeam() {
-    printFunctionName(__FUNCTION__);
+bool addRemoveTeam(bool test = false) {
+    PRINT_FUNCTION_NAME;
     world_cup_t game = world_cup_t();
     int id = 0;
     for (int i = 1; i <= 1000; i++) {
@@ -70,6 +92,32 @@ bool addRemoveTeam() {
     for (int i = 100; i <= 200; i++) {
         ASSERT(game.add_team(i), StatusType::SUCCESS);
     }
+
+    return true;
+}
+
+bool addPlayer(bool test = false) {
+    PRINT_FUNCTION_NAME;
+    world_cup_t game = world_cup_t();
+    const int spirit_list[5] = {0,1,2,3,4};
+    const permutation_t spirit = permutation_t(spirit_list);
+    for (int i = 1; i <= 10; i++) {
+        ASSERT(game.add_team(i), StatusType::SUCCESS);
+    }
+    for (int i = 1; i <= 100; i++) {
+        ASSERT(game.add_player(i, (i % 10) + 1, spirit, 0, 0, 0, false),
+               StatusType::SUCCESS);
+    }
+    for (int i = 1; i <= 100; i++) {
+        ASSERT(game.add_player(i, (i % 10) + 1, spirit, 0, 0, 0, false),
+               StatusType::FAILURE);
+    }
+    ASSERT(game.remove_team(1), StatusType::SUCCESS);
+    ASSERT(game.add_player(10, 2, spirit, 0, 0, 0, false), StatusType::FAILURE);
+    ASSERT(game.add_player(101, 1, spirit, 0, 0, 0, false), StatusType::FAILURE);
+    ASSERT(game.add_team(1), StatusType::SUCCESS);
+    ASSERT(game.add_player(101, 1, spirit, 0, 0, 0, false), StatusType::SUCCESS);
+
     return true;
 }
 
@@ -78,7 +126,7 @@ int main() {
     system(("chcp " + std::to_string(CP_UTF8)).c_str());
     std::cout << std::string(MAX_LINE_LENGTH + 28, '-') << std::endl;
 
-    std::vector<bool (*)()> automatic_tests = {&addRemoveTeam};
+    std::vector<bool (*)(bool)> automatic_tests = {&addRemoveTeam, &addPlayer};
 
     std::vector<void (*)()> manual_tests = {};
 
