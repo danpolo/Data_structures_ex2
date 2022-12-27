@@ -6,8 +6,7 @@ Team::Team(int teamID) : teamID(teamID), m_points(0), m_strength(0),
 
 
 Team::~Team() {
-    m_dict_of_players_in_team_by_key.destroyNodes();
-    m_dict_of_players_in_team.destroyNodes();
+
 }
 
 int Team::valueOfTeam() const {
@@ -38,21 +37,21 @@ void Team::addPoints(int points) {
     m_points += points;
 }
 
-void Team::move_all_players(Team *team2) {
-    Player** moving_players_begin = team2->m_dict_of_players_in_team.inorderNodesByValue();
-    Player** moving_players = moving_players_begin;
-    int number_of_players_to_move = team2->numberOfPlayers();
-    int i = 0;
-    while (i < number_of_players_to_move){
-        (*moving_players)->addGamesPlayed(team2->m_games_played);
-        add_player_in_team((*moving_players)->getPlayerId(), *moving_players);
-        (*moving_players)->setTeamID(getID());
-        team2->remove_player_in_team((*moving_players)->getPlayerId(), *moving_players);
-        i++;
-        moving_players++;
-    }
-    delete[] moving_players_begin;
-}
+//void Team::move_all_players(Team *team2) {
+//    Player** moving_players_begin = team2->m_dict_of_players_in_team.inorderNodesByValue();
+//    Player** moving_players = moving_players_begin;
+//    int number_of_players_to_move = team2->numberOfPlayers();
+//    int i = 0;
+//    while (i < number_of_players_to_move){
+//        (*moving_players)->addGamesPlayed(team2->m_games_played);
+//        add_player_in_team((*moving_players)->getPlayerId(), *moving_players);
+//        (*moving_players)->setTeamID(getID());
+//        team2->remove_player_in_team((*moving_players)->getPlayerId(), *moving_players);
+//        i++;
+//        moving_players++;
+//    }
+//    delete[] moving_players_begin;
+//}
 
 bool Team::operator>(const Team &other) const {
     return (valueOfTeam()) > (other.valueOfTeam());
