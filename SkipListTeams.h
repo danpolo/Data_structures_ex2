@@ -7,6 +7,7 @@
 
 #include "Team.h"
 #include "wet2util.h"
+#include <ctime>
 
 #define INFINITY_NEGATIVE_ID (-1)
 
@@ -20,6 +21,7 @@ public:
     StatusType insert(int teamId, Team* team);
     Team* find(int teamId) const;
     bool remove(int teamId);
+    int get_height() const; //for tests
 
 private:
     class Node {

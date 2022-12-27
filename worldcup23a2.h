@@ -31,7 +31,9 @@ public:
 	
 	world_cup_t();
 	virtual ~world_cup_t();
-	
+
+    int get_teams_skip_list_height() const; //for tests
+
 	StatusType add_team(int teamId);
 	
 	StatusType remove_team(int teamId);

@@ -27,8 +27,14 @@ public:
     bool operator==(const Team& other) const;
     Team& operator-=(const Team& other);
     bool operator/(const Team& other) const;
-    Player* getFirstPlayer() const;
-    Player* getLastPlayer() const;
+    Player* getFirstPlayer() const {
+        return first_player;
+    }
+
+    Player* getLastPlayer() const {
+        return last_player;
+    }
+
     void setFirstPlayer(Player* f_ply){
         first_player = f_ply;
     }

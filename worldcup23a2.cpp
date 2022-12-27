@@ -2,6 +2,7 @@
 
 world_cup_t::world_cup_t() : m_teams_dictionary(SkipListTeams()),
                              m_all_players_dictionary(Uptrees()) {
+    std::srand(time(nullptr));
 }
 
 world_cup_t::~world_cup_t() {
@@ -33,8 +34,13 @@ StatusType world_cup_t::remove_team(int teamId) {
     if (teamId <= 0) {
         return StatusType::INVALID_INPUT;
     }
+    Team* removed_team = m_teams_dictionary.find(teamId);
 
-    Player* first_player_of_removed_team = m_teams_dictionary.find(teamId)->getFirstPlayer();
+    if (removed_team == nullptr) {
+        return StatusType::FAILURE;
+    }
+
+    Player* first_player_of_removed_team = removed_team->getFirstPlayer();
     if (first_player_of_removed_team != nullptr) {
         int first_player_id_of_removed_team = first_player_of_removed_team->getPlayerId();
         m_all_players_dictionary.removeTeamFromPlayer(first_player_id_of_removed_team);
@@ -50,7 +56,27 @@ StatusType world_cup_t::remove_team(int teamId) {
 StatusType world_cup_t::add_player(int playerId, int teamId,
                                    const permutation_t &spirit, int gamesPlayed,
                                    int ability, int cards, bool goalKeeper) {
-    // TODO: Your code goes here
+
+    if (playerId <= 0 or teamId <= 0 or not spirit.isvalid() or gamesPlayed < 0 or cards < 0) {
+        return StatusType::INVALID_INPUT;
+    }
+
+    if (m_all_players_dictionary.findPlayer(playerId) != nullptr or m_teams_dictionary.find
+    (teamId) != nullptr) {
+        return StatusType::FAILURE;
+    }
+
+    try {
+        Player* new_player = new Player(playerId, teamId, spirit, gamesPlayed, ability, cards,
+                                        goalKeeper);
+        Team* new_player_team = m_teams_dictionary.find(teamId);
+        new_player_team->setLastPlayer(new_player);
+        m_all_players_dictionary.insert(new_player, new_player_team);
+    }
+    catch (std::bad_alloc &) {
+        return StatusType::ALLOCATION_ERROR;
+    }
+
     return StatusType::SUCCESS;
 }
 
@@ -92,4 +118,8 @@ output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
 StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     // TODO: Your code goes here
     return StatusType::SUCCESS;
+}
+
+int world_cup_t::get_teams_skip_list_height() const {
+    return m_teams_dictionary.get_height();
 }
