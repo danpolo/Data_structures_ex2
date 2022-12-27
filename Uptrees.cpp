@@ -64,7 +64,17 @@ Player *Uptrees::findPlayer(int player_id) const {
 
 
 void Uptrees::allocateBiggerArray() {
-
+    NodePlayer** biggerArray = new NodePlayer*[size_of_array*2];
+    int before_size_of_array = size_of_array;
+    size_of_array = 2*size_of_array;
+    for (int i = 0; i < before_size_of_array; i++) {
+        if (array_of_players[i] != nullptr) {
+            int temp_player_id = array_of_players[i]->value->getPlayerId();
+            biggerArray[hashID(temp_player_id, false)] = array_of_players[i];
+        }
+    }
+    delete array_of_players;
+    array_of_players = biggerArray;
 }
 
 Team *Uptrees::findTeam(int player_id) {
