@@ -10,50 +10,55 @@ public:
     Team(const Team& other) = default;
     ~Team();
 
-    void move_all_players(Team* team2);
-    int valueOfTeam() const;   //points + strength
     int getPoints() const;
-    int getStrength() const;
+    int getTotalAbility() const;
     int getID() const;
     int getGamesPlayed() const;
-    int getTopScorerInTeam() const;
-    void addPoints(int points);
-    void addStrength(int strength);
-    void addGamesPlayed(int added);
-    int numberOfPlayers() const;
-    bool isGoalKeeperExists() const;
+    const permutation_t &getTeamSpirit() const;
+    int getNumberOfPlayers() const;
     bool isValidTeam() const;
+    Player* getFirstPlayer() const;
+    Player* getLastPlayer() const;
+
+    void addPoints(int points);
+    void addTotalAbility(int ability);
+    void addGamesPlayed(int games_played);
+    void addGoalKeeper();
+    void updateTeamSpirit(const permutation_t &new_spirit);
+    void setFirstPlayer(Player* f_ply);
+    void setLastPlayer(Player* l_ply);
+
     bool operator>(const Team& other) const;
-    bool operator==(const Team& other) const;
-    Team& operator-=(const Team& other);
-    bool operator/(const Team& other) const;
-    Player* getFirstPlayer() const {
-        return first_player;
-    }
 
-    Player* getLastPlayer() const {
-        return last_player;
-    }
+    enum struct MatchResult {
+        TIE                       = 0,
+        FIRST_TEAM_WON_BY_VALUE   = 1,
+        FIRST_TEAM_WON_BY_SPIRIT  = 2,
+        SECOND_TEAM_WON_BY_VALUE  = 3,
+        SECOND_TEAM_WON_BY_SPIRIT = 4,
+    };
 
-    void setFirstPlayer(Player* f_ply){
-        first_player = f_ply;
-    }
-    void setLastPlayer(Player* l_ply){
-        last_player = l_ply;
-    }
+    friend MatchResult playMatchResult(Team* first_team, Team* second_team);
 
 private:
     int teamID;
     int m_points;
-    int m_strength;
+    int m_total_ability;
     int m_games_played;
     int m_number_of_players;
-    int m_goalKeeper_exist;
+    bool is_valid;
+    permutation_t m_team_spirit;
     Player* first_player;
     Player* last_player;
+
+    int getTeamValue() const;   //points + strength
+    int getTeamSpiritStrength() const;
 };
+
+bool operator==(const Team& v1, const Team& v2);
 bool operator!=(const Team& v1, const Team& v2);
 bool operator<(const Team& v1, const Team& v2);
-Team operator-(const Team& v1, const Team& v2);
+
+Team::MatchResult playMatchResult(Team* first_team, Team* second_team);
 
 #endif //EX1_TEAM_H

@@ -1,16 +1,16 @@
 #include "Team.h"
 
-Team::Team(int teamID) : teamID(teamID), m_points(0), m_strength(0),
-                                m_games_played(0), m_number_of_players(0), m_goalKeeper_exist(0),
-                                first_player(nullptr), last_player(nullptr){}
+Team::Team(int teamID) : teamID(teamID), m_points(0), m_total_ability(0),
+                         m_games_played(0), m_number_of_players(0), is_valid(false),
+                         m_team_spirit(), first_player(nullptr), last_player(nullptr) {}
 
 
 Team::~Team() {
 
 }
 
-int Team::valueOfTeam() const {
-    return m_strength + m_points;
+int Team::getTeamValue() const {
+    return m_total_ability + m_points;
 }
 
 int Team::getGamesPlayed() const {
@@ -18,19 +18,19 @@ int Team::getGamesPlayed() const {
 }
 
 bool Team::isValidTeam() const {
-    return ((numberOfPlayers() >= 11) && (isGoalKeeperExists()));
+    return is_valid;
 }
 
-void Team::addGamesPlayed(int added) {
-    m_games_played += added;
+void Team::addGamesPlayed(int games_played) {
+    m_games_played += games_played;
 }
 
 int Team::getPoints() const {
     return m_points;
 }
 
-int Team::getStrength() const {
-    return m_strength;
+int Team::getTotalAbility() const {
+    return m_total_ability;
 }
 
 void Team::addPoints(int points) {
@@ -40,7 +40,7 @@ void Team::addPoints(int points) {
 //void Team::move_all_players(Team *team2) {
 //    Player** moving_players_begin = team2->m_dict_of_players_in_team.inorderNodesByValue();
 //    Player** moving_players = moving_players_begin;
-//    int number_of_players_to_move = team2->numberOfPlayers();
+//    int number_of_players_to_move = team2->getNumberOfPlayers();
 //    int i = 0;
 //    while (i < number_of_players_to_move){
 //        (*moving_players)->addGamesPlayed(team2->m_games_played);
@@ -54,46 +54,92 @@ void Team::addPoints(int points) {
 //}
 
 bool Team::operator>(const Team &other) const {
-    return (valueOfTeam()) > (other.valueOfTeam());
+    if (getTeamValue() > other.getTeamValue()) {
+        return true;
+    }
+
+    if (getTeamValue() == other.getTeamValue() and getTeamSpiritStrength() > other
+            .getTeamSpiritStrength()) {
+        return true;
+    }
+
+    return false;
 }
 
-bool Team::operator==(const Team &other) const {
-    return (valueOfTeam()) == (other.valueOfTeam());
+bool operator==(const Team &v1, const Team &v2) {
+    return !(v1 > v2) and !(v1 < v2);
 }
 
-int Team::numberOfPlayers() const {
+int Team::getNumberOfPlayers() const {
     return m_number_of_players;
 }
 
-void Team::addStrength(int strength) {
-    m_strength += strength;
+void Team::addTotalAbility(int ability) {
+    m_total_ability += ability;
 }
 
 int Team::getID() const {
     return teamID;
 }
 
-bool Team::isGoalKeeperExists() const {
-    if (m_goalKeeper_exist > 0){
-        return true;
-    }
-    return false;
-}
-bool operator!=(const Team& v1, const Team& v2){
+bool operator!=(const Team &v1, const Team &v2) {
     return !(v1 == v2);
 }
-bool operator<(const Team& v1, const Team& v2){
+
+bool operator<(const Team &v1, const Team &v2) {
     return v2 > v1;
 }
 
-Team operator-(const Team& v1, const Team& v2){
-    return Team(v1) -= v2;
-}
-Team &Team::operator-=(const Team &other) {
-    return *this;
+
+void Team::addGoalKeeper() {
+    is_valid = true;
 }
 
-bool  Team::operator/(const Team &other) const {
-    return true;
+const permutation_t &Team::getTeamSpirit() const {
+    return m_team_spirit;
+}
+
+void Team::updateTeamSpirit(const permutation_t &new_spirit) {
+    m_team_spirit = m_team_spirit * new_spirit;
+}
+
+int Team::getTeamSpiritStrength() const {
+    return m_team_spirit.strength();
+}
+
+Player *Team::getFirstPlayer() const {
+    return first_player;
+}
+
+Player *Team::getLastPlayer() const {
+    return last_player;
+}
+
+void Team::setFirstPlayer(Player *f_ply) {
+    first_player = f_ply;
+}
+
+void Team::setLastPlayer(Player *l_ply) {
+    last_player = l_ply;
+}
+
+Team::MatchResult playMatchResult(Team *first_team, Team *second_team) {
+    if (first_team->getTeamValue() > second_team->getTeamValue()) {
+        return Team::MatchResult::FIRST_TEAM_WON_BY_VALUE;
+    }
+
+    if (first_team->getTeamValue() < second_team->getTeamValue()) {
+        return Team::MatchResult::SECOND_TEAM_WON_BY_VALUE;
+    }
+
+    if (first_team->getTeamSpiritStrength() > second_team->getTeamSpiritStrength()) {
+        return Team::MatchResult::FIRST_TEAM_WON_BY_SPIRIT;
+    }
+
+    if (first_team->getTeamSpiritStrength() < second_team->getTeamSpiritStrength()) {
+        return Team::MatchResult::SECOND_TEAM_WON_BY_SPIRIT;
+    }
+
+    return Team::MatchResult::TIE;
 }
 

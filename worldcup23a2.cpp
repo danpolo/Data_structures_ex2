@@ -1,5 +1,8 @@
 #include "worldcup23a2.h"
 
+const int MATCH_WIN_POINTS = 3;
+const int MATCH_TIE_POINTS = 1;
+
 world_cup_t::world_cup_t() : m_teams_dictionary(SkipListTeams()),
                              m_all_players_dictionary(Uptrees()) {
     std::srand(time(nullptr));
@@ -67,10 +70,17 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
     }
 
     try {
-        Player* new_player = new Player(playerId, teamId, spirit, gamesPlayed, ability, cards,
-                                        goalKeeper);
         Team* new_player_team = m_teams_dictionary.find(teamId);
+        int updated_games_played = gamesPlayed - new_player_team->getGamesPlayed();
+        Player* new_player = new Player(playerId, teamId, spirit, updated_games_played, ability,
+                                                                                cards, goalKeeper);
         m_all_players_dictionary.insert(new_player, new_player_team);
+
+        new_player_team->addTotalAbility(ability);
+        new_player_team->updateTeamSpirit(spirit);
+        if (goalKeeper) {
+            new_player_team->addGoalKeeper();
+        }
     }
     catch (std::bad_alloc &) {
         return StatusType::ALLOCATION_ERROR;
@@ -80,8 +90,40 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
 }
 
 output_t<int> world_cup_t::play_match(int teamId1, int teamId2) {
-    // TODO: Your code goes here
-    return StatusType::SUCCESS;
+    if (teamId1 <= 0 or teamId2 <= 0 or teamId1 == teamId2) {
+        return StatusType::INVALID_INPUT;
+    }
+
+    Team* first_team = m_teams_dictionary.find(teamId1);
+    Team* second_team = m_teams_dictionary.find(teamId2);
+    if (first_team == nullptr or second_team == nullptr or not first_team->isValidTeam() or not
+                                                                    second_team->isValidTeam()) {
+        return StatusType::FAILURE;
+    }
+
+    Team::MatchResult match_result = playMatchResult(first_team, second_team);
+
+    switch (match_result) {
+        case Team::MatchResult::TIE:
+            first_team->addPoints(MATCH_TIE_POINTS);
+            second_team->addPoints(MATCH_TIE_POINTS);
+            break;
+
+        case Team::MatchResult::FIRST_TEAM_WON_BY_VALUE:
+        case Team::MatchResult::FIRST_TEAM_WON_BY_SPIRIT:
+            first_team->addPoints(MATCH_WIN_POINTS);
+            break;
+
+        case Team::MatchResult::SECOND_TEAM_WON_BY_VALUE:
+        case Team::MatchResult::SECOND_TEAM_WON_BY_SPIRIT:
+            second_team->addPoints(MATCH_WIN_POINTS);
+            break;
+    }
+
+    first_team->addGamesPlayed(1);
+    second_team->addGamesPlayed(1);
+
+    return static_cast<const int>(match_result);
 }
 
 output_t<int> world_cup_t::num_played_games_for_player(int playerId) {
