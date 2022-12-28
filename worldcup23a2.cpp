@@ -70,7 +70,6 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
         Player* new_player = new Player(playerId, teamId, spirit, gamesPlayed, ability, cards,
                                         goalKeeper);
         Team* new_player_team = m_teams_dictionary.find(teamId);
-        //new_player_team->setLastPlayer(new_player);
         m_all_players_dictionary.insert(new_player, new_player_team);
     }
     catch (std::bad_alloc &) {
@@ -86,8 +85,25 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2) {
 }
 
 output_t<int> world_cup_t::num_played_games_for_player(int playerId) {
-    // TODO: Your code goes here
-    return 22;
+    if (playerId <= 0) {
+        return StatusType::INVALID_INPUT;
+    }
+
+    Player* player = m_all_players_dictionary.findPlayer(playerId);
+    if (player == nullptr) {
+        return StatusType::FAILURE;
+    }
+
+    Team* team = m_all_players_dictionary.findTeam(playerId);
+
+    int team_games_played;
+    if (team == nullptr) {
+        team_games_played = m_all_players_dictionary.getGamesPlayedDeletedTeam(playerId);
+    } else {
+        team_games_played = team->getGamesPlayed();
+    }
+
+    return player->getGamesPlayed() + team_games_played;
 }
 
 StatusType world_cup_t::add_player_cards(int playerId, int cards) {

@@ -10,6 +10,8 @@
 #include "Player.h"
 #include "Team.h"
 
+const int ACTIVE_TEAM_GAMES_PLAYED = -1;
+
 class Uptrees {
 
 public:
@@ -21,12 +23,14 @@ public:
     void upTreeUnion(Team* bigger_team, Team* smaller_team);
     void insert(Player* player, Team* team);
     void removeTeamFromPlayer(int player_id);
+    int getGamesPlayedDeletedTeam(int player_id);
 
 
 private:
     class NodeTeam {
     public:
-        NodeTeam(int key, Team* value): key(key), value(value), num_of_sons_in_subtree(0){}
+        NodeTeam(int key, Team* value): key(key), value(value), num_of_sons_in_subtree(0),
+        games_played_deleted_team(ACTIVE_TEAM_GAMES_PLAYED){}
         NodeTeam(const NodeTeam& node) = default;
         NodeTeam& operator=(const NodeTeam& node) = default;
         ~NodeTeam() = default;
@@ -40,6 +44,7 @@ private:
         int key;
         Team* value;
         int num_of_sons_in_subtree;
+        int games_played_deleted_team;
     };
     class NodePlayer {
     public:
