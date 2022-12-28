@@ -159,8 +159,16 @@ output_t<int> world_cup_t::get_player_cards(int playerId) {
 }
 
 output_t<int> world_cup_t::get_team_points(int teamId) {
-    // TODO: Your code goes here
-    return 30003;
+    if (teamId <= 0) {
+        return StatusType::INVALID_INPUT;
+    }
+
+    Team* team = m_teams_dictionary.find(teamId);
+    if (team == nullptr) {
+        return StatusType::FAILURE;
+    }
+
+    return team->getPoints();
 }
 
 output_t<int> world_cup_t::get_ith_pointless_ability(int i) {

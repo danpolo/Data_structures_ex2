@@ -100,7 +100,12 @@ const permutation_t &Team::getTeamSpirit() const {
 }
 
 void Team::updateTeamSpirit(const permutation_t &new_spirit) {
-    m_team_spirit = m_team_spirit * new_spirit;
+    if (not m_team_spirit.isvalid()) {
+        m_team_spirit = new_spirit;
+    }
+    else {
+        m_team_spirit = m_team_spirit * new_spirit;
+    }
 }
 
 int Team::getTeamSpiritStrength() const {
