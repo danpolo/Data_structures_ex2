@@ -149,13 +149,30 @@ output_t<int> world_cup_t::num_played_games_for_player(int playerId) {
 }
 
 StatusType world_cup_t::add_player_cards(int playerId, int cards) {
-    // TODO: Your code goes here
+    if (playerId <= 0 or cards < 0) {
+        return StatusType::INVALID_INPUT;
+    }
+
+    Player* player = m_all_players_dictionary.findPlayer(playerId);
+    if (player == nullptr or m_all_players_dictionary.findTeam(playerId) == nullptr) {
+        return StatusType::FAILURE;
+    }
+
+    player->addCards(cards);
     return StatusType::SUCCESS;
 }
 
 output_t<int> world_cup_t::get_player_cards(int playerId) {
-    // TODO: Your code goes here
-    return StatusType::SUCCESS;
+    if (playerId <= 0) {
+        return StatusType::INVALID_INPUT;
+    }
+
+    Player* player = m_all_players_dictionary.findPlayer(playerId);
+    if (player == nullptr) {
+        return StatusType::FAILURE;
+    }
+
+    return player->getCards();
 }
 
 output_t<int> world_cup_t::get_team_points(int teamId) {
