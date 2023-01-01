@@ -54,20 +54,18 @@ void Team::addPoints(int points) {
 //}
 
 bool Team::operator>(const Team &other) const {
-    if (getTeamValue() > other.getTeamValue()) {
+    if (getTotalAbility() > other.getTotalAbility()) {
         return true;
     }
 
-    if (getTeamValue() == other.getTeamValue() and getTeamSpiritStrength() > other
-            .getTeamSpiritStrength()) {
+    if (getTotalAbility() == other.getTotalAbility() && (getID() > other.getID())){
         return true;
     }
-
     return false;
 }
 
 bool operator==(const Team &v1, const Team &v2) {
-    return !(v1 > v2) and !(v1 < v2);
+    return (v1.getTotalAbility() == v2.getTotalAbility()) && (v1.getID() == v2.getID());
 }
 
 int Team::getNumberOfPlayers() const {

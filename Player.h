@@ -32,6 +32,8 @@ public:
 
     int getTeamID() const;
 
+    permutation_t getSpirit() const;
+
 
 private:
     int player_id;

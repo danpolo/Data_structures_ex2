@@ -20,11 +20,14 @@
 #include "Uptrees.h"
 #include "Player.h"
 #include "Team.h"
+#include "RankedTree.h"
 
 class world_cup_t {
 private:
 	SkipListTeams m_teams_dictionary;
     Uptrees m_all_players_dictionary;
+    RankedTree m_teams_by_ability;
+    int m_number_of_teams;
 	
 public:
 	// <DO-NOT-MODIFY> {

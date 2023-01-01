@@ -14,6 +14,10 @@ int Player::getTeamID() const{
     return team_id;
 }
 
+permutation_t Player::getSpirit() const {
+    return spirit;
+}
+
 void Player::addCards(int addCards) {
     cards += addCards;
 }
