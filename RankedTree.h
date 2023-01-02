@@ -66,7 +66,7 @@ private:
         }
         Team* temp = current_root->value;
         if (temp->getTotalAbility() == value_to_find->getTotalAbility()) {
-            while (current_root->right_son != nullptr) {
+            while ((current_root->right_son != nullptr) && (current_root->right_son->value->getTotalAbility() == value_to_find->getTotalAbility())) {
                 current_root = current_root->right_son;
             }
             return current_root;

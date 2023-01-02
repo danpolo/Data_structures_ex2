@@ -128,6 +128,8 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2) {
 
     first_team->addGamesPlayed(1);
     second_team->addGamesPlayed(1);
+    m_all_players_dictionary.addGamesPlayedOnlyToFirst(first_team->getFirstPlayer());
+    m_all_players_dictionary.addGamesPlayedOnlyToFirst(second_team->getFirstPlayer());
 
     return static_cast<const int>(match_result);
 }

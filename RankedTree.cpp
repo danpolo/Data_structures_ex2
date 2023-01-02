@@ -254,16 +254,17 @@ StatusType RankedTree::remove(Team* value) {
 
 int RankedTree::find(int i){
     Node* search = root;
+    Team* ans = nullptr;
     while (search != nullptr) {
         if ((search->left_son != nullptr) && (search->left_son->getSizeOfSubTree() == i)) {
-            return findNodeByTheSameId(root, search->value)->key;
+            ans = search->value;
         }
         if ((search->left_son != nullptr) && (search->left_son->getSizeOfSubTree() > i)) {
             search = search->left_son;
         }
         else {
             if (i == 0){
-                return findNodeByTheSameId(root, search->value)->key;
+                ans = search->value;
             }
             if (search->left_son != nullptr) {
                 i -= (search->left_son->getSizeOfSubTree() + 1);
@@ -274,5 +275,5 @@ int RankedTree::find(int i){
             search = search->right_son;
         }
     }
-    return 0;
+    return findNodeByTheSameId(root, ans)->key;
 }
