@@ -25,7 +25,7 @@ void Uptrees::insert(Player *player, Team* team) {
     else {
         int last_player_id = team->getLastPlayer()->getPlayerId();
         player_gets_in->setFatherPlayer(array_of_players[hashID(last_player_id, true, array_of_players)]);
-        NodePlayer* player_node = player_gets_in;
+        NodePlayer* player_node = player_gets_in;      //can access the first player of a team and then to team node
         while (player_node->father_team == nullptr) {
             player_node = player_node->father_player;
         }
@@ -127,11 +127,16 @@ Team *Uptrees::findTeam(int player_id) {
 
 void Uptrees::upTreeUnion(Team *bigger_team, Team *smaller_team) {
     int first_player_of_smaller_team = smaller_team->getFirstPlayer()->getPlayerId();
-    int last_player_of_bigger_team = bigger_team->getLastPlayer()->getPlayerId();
 
     NodePlayer* first_player_of_smaller_team_node = array_of_players[hashID
                                                                      (first_player_of_smaller_team,
                                                                       true, array_of_players)];
+    if (bigger_team->getNumberOfPlayers() == 0) {
+        first_player_of_smaller_team_node->father_team->value->setID(bigger_team->getID());
+        first_player_of_smaller_team_node->father_team->setKey(bigger_team->getID());
+        return;
+    }
+    int last_player_of_bigger_team = bigger_team->getLastPlayer()->getPlayerId();
     NodePlayer* last_player_of_bigger_team_node = array_of_players[hashID
                                                                    (last_player_of_bigger_team,
                                                                     true, array_of_players)];
@@ -179,6 +184,7 @@ int Uptrees::getGamesPlayedDeletedTeam(int player_id) {
 }
 
 permutation_t Uptrees::getPartialPermutation(int player_id) {
+    findTeam(player_id);
     int index = hashID(player_id, true, array_of_players);
     NodePlayer* found_player = array_of_players[index];
     permutation_t ans = found_player->partial_perm;

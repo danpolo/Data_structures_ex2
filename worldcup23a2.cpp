@@ -83,6 +83,7 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
         m_teams_by_ability.remove(new_player_team);  //might be complexity problem
         new_player_team->addTotalAbility(ability);
         new_player_team->updateTeamSpirit(spirit);
+        new_player_team->addNumberOfPlayers(1);
         if (goalKeeper) {
             new_player_team->addGoalKeeper();
         }
@@ -233,18 +234,17 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
         return StatusType::SUCCESS;
     }
     if (team1->getNumberOfPlayers() == 0){
-        int temp_id = team1->getID();
+        m_teams_dictionary.remove(team2);
+        m_all_players_dictionary.upTreeUnion(team1, team2);
         m_teams_dictionary.remove(team1);
         m_teams_by_ability.remove(team1);
         m_number_of_teams -= 1;
-        m_teams_dictionary.remove(team2);
-        m_teams_by_ability.remove(team2);
-        team2->setID(temp_id);
-        m_teams_dictionary.insert(teamId2, team2);
-        m_teams_by_ability.insert(teamId2, team2);
+        m_teams_dictionary.insert(team2->getID(), team2); //sorted by id
         return StatusType::SUCCESS;
     }
     m_all_players_dictionary.upTreeUnion(team1, team2);
+    team1->addNumberOfPlayers(team2->getNumberOfPlayers());
+    m_number_of_teams -= 1;
     m_teams_dictionary.remove(team2);
     m_teams_by_ability.remove(team2);
     return StatusType::SUCCESS;

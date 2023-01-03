@@ -16,7 +16,6 @@
 #define WORLDCUP23A2_H_
 
 #include "wet2util.h"
-#include "SkipListTeams.h"
 #include "Uptrees.h"
 #include "Player.h"
 #include "Team.h"

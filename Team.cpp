@@ -72,6 +72,10 @@ int Team::getNumberOfPlayers() const {
     return m_number_of_players;
 }
 
+void Team::addNumberOfPlayers(int added) {
+    m_number_of_players += added;
+}
+
 void Team::addTotalAbility(int ability) {
     m_total_ability += ability;
 }
@@ -80,7 +84,7 @@ int Team::getID() const {
     return teamID;
 }
 
-int Team::setID(int id) {
+void Team::setID(int id) {
     teamID = id;
 }
 
