@@ -35,7 +35,8 @@ bool SkipListTeams::coinToss() const {
 
 SkipListTeams::Node *
 SkipListTeams::recursiveInsert(int teamId, Team *team, SkipListTeams::Node *current_node) {
-    while (current_node->right != nullptr and current_node->right->key <= teamId) {
+    while (current_node->right != nullptr and ((current_node->right->value->getTotalAbility() < team->getTotalAbility()) ||
+            ((current_node->right->value->getTotalAbility() == team->getTotalAbility()) && (current_node->right->key < teamId)))) {
         current_node = current_node->right;
     }
     if (current_node->down == nullptr) {
@@ -66,7 +67,8 @@ Team *SkipListTeams::find(int teamId) const {
     Node *current_node = root;
 
     while (true) {
-        while (current_node->right != nullptr and current_node->right->key <= teamId) {
+        while (current_node->right != nullptr and ((current_node->right->value->getTotalAbility() < team->getTotalAbility()) ||
+                                                   ((current_node->right->value->getTotalAbility() == team->getTotalAbility()) && (current_node->right->key < teamId)))) {
             current_node = current_node->right;
         }
         if (current_node->down == nullptr) {

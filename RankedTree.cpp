@@ -178,6 +178,24 @@ void RankedTree::UpdateTilRoot(RankedTree::Node *start) {
     }
 }
 
+StatusType RankedTree::InsertKey(int key, Team* value){
+    Node* optional_father = findNodeByTheSameId(root, value->getID());
+    if (optional_father->key == key){
+        return StatusType::FAILURE;
+    }
+    Node* son = new Node(key, value, optional_father);
+    if (key < optional_father->key){
+        optional_father->setLeft(son);
+    }
+    else{
+        optional_father->setRight(son);
+    }
+    UpdateTilRoot(optional_father);
+    stabilizeTree(optional_father);
+    length += 1;
+    return StatusType::SUCCESS;
+}
+
 StatusType RankedTree::insertValue(int key, Team *value) {
     Node* optional_father = findNodeByValue(root, value);
     if (optional_father->key == key){
@@ -233,6 +251,9 @@ StatusType RankedTree::insert(int key, Team* value) {
             return StatusType::SUCCESS;
         }
         else {
+            if (is_sorted_by_id){
+                return InsertKey(key, value);
+            }
             return insertValue(key, value);
         }
     }
@@ -243,7 +264,13 @@ StatusType RankedTree::insert(int key, Team* value) {
 
 
 StatusType RankedTree::remove(Team* value) {
-    Node* temp = findNodeByValue(root, value);
+    Node* temp = nullptr;
+    if (is_sorted_by_id){
+        temp = findNodeByTheSameId(root, value->getID());
+    }
+    else {
+        temp = findNodeByValue(root, value);
+    }
     if (*temp->value != *value)
     {
         return StatusType::FAILURE;
@@ -252,12 +279,23 @@ StatusType RankedTree::remove(Team* value) {
     return StatusType::SUCCESS;
 }
 
-int RankedTree::find(int i){
+Team *RankedTree::find(int key) {
+    if (is_sorted_by_id){
+        Node* temp = findNodeByTheSameId(root, key);
+        if (temp->key == key) {
+            return temp->value;
+        }
+    }
+    return nullptr;
+}
+
+int RankedTree::find_ith(int i){
     Node* search = root;
     Team* ans = nullptr;
     while (search != nullptr) {
         if ((search->left_son != nullptr) && (search->left_son->getSizeOfSubTree() == i)) {
             ans = search->value;
+            break;
         }
         if ((search->left_son != nullptr) && (search->left_son->getSizeOfSubTree() > i)) {
             search = search->left_son;
@@ -265,6 +303,7 @@ int RankedTree::find(int i){
         else {
             if (i == 0){
                 ans = search->value;
+                break;
             }
             if (search->left_son != nullptr) {
                 i -= (search->left_son->getSizeOfSubTree() + 1);
@@ -275,5 +314,8 @@ int RankedTree::find(int i){
             search = search->right_son;
         }
     }
-    return findNodeByTheSameId(root, ans)->key;
+    if (is_sorted_by_id){
+        return ans->getID();
+    }
+    return ans->getTotalAbility();
 }

@@ -80,6 +80,10 @@ int Team::getID() const {
     return teamID;
 }
 
+int Team::setID(int id) {
+    teamID = id;
+}
+
 bool operator!=(const Team &v1, const Team &v2) {
     return !(v1 == v2);
 }

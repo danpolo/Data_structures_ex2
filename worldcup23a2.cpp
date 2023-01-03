@@ -3,9 +3,9 @@
 const int MATCH_WIN_POINTS = 3;
 const int MATCH_TIE_POINTS = 1;
 
-world_cup_t::world_cup_t() : m_teams_dictionary(SkipListTeams()),
+world_cup_t::world_cup_t() : m_teams_dictionary(RankedTree(true)),
                              m_all_players_dictionary(Uptrees()),
-                             m_teams_by_ability(RankedTree()),
+                             m_teams_by_ability(RankedTree(false)),
                              m_number_of_teams(0){
     std::srand(time(nullptr));
 }
@@ -53,7 +53,7 @@ StatusType world_cup_t::remove_team(int teamId) {
         m_all_players_dictionary.removeTeamFromPlayer(first_player_id_of_removed_team);
     }
 
-    if (not m_teams_dictionary.remove(teamId)) {
+    if (StatusType::SUCCESS != m_teams_dictionary.remove(removed_team)) {
         return StatusType::FAILURE;
     }
     m_number_of_teams -= 1;
@@ -200,7 +200,7 @@ output_t<int> world_cup_t::get_ith_pointless_ability(int i) {
     if ((i < 0) || (m_number_of_teams <= i)){
         return StatusType::FAILURE;
     }
-    return m_teams_by_ability.find(i);
+    return m_teams_by_ability.find_ith(i);
 }
 
 output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
@@ -226,12 +226,30 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     if ((team1 == nullptr) || (team2 == nullptr)){
         return StatusType::FAILURE;
     }
+    if (team2->getNumberOfPlayers() == 0){
+        m_teams_dictionary.remove(team2);
+        m_teams_by_ability.remove(team2);
+        m_number_of_teams -= 1;
+        return StatusType::SUCCESS;
+    }
+    if (team1->getNumberOfPlayers() == 0){
+        int temp_id = team1->getID();
+        m_teams_dictionary.remove(team1);
+        m_teams_by_ability.remove(team1);
+        m_number_of_teams -= 1;
+        m_teams_dictionary.remove(team2);
+        m_teams_by_ability.remove(team2);
+        team2->setID(temp_id);
+        m_teams_dictionary.insert(teamId2, team2);
+        m_teams_by_ability.insert(teamId2, team2);
+        return StatusType::SUCCESS;
+    }
     m_all_players_dictionary.upTreeUnion(team1, team2);
-    m_teams_dictionary.remove(teamId2);
+    m_teams_dictionary.remove(team2);
     m_teams_by_ability.remove(team2);
     return StatusType::SUCCESS;
 }
 
-int world_cup_t::get_teams_skip_list_height() const {
-    return m_teams_dictionary.get_height();
-}
+//int world_cup_t::get_teams_skip_list_height() const {
+//    return m_teams_dictionary.get_height();
+//}

@@ -13,6 +13,7 @@ public:
     int getPoints() const;
     int getTotalAbility() const;
     int getID() const;
+    int setID(int id);
     int getGamesPlayed() const;
     const permutation_t &getTeamSpirit() const;
     int getNumberOfPlayers() const;

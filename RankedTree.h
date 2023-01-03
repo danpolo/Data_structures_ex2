@@ -8,11 +8,12 @@ const int LEAF_SON_HEIGHT = -1;
 
 class RankedTree {
 public:
-    RankedTree() : root(nullptr), length(0){};
+    RankedTree(bool is_id) : root(nullptr), length(0), is_sorted_by_id(is_id){};
 
     StatusType insert(int key, Team* value);
     StatusType remove(Team* value);
-    int find(int key);
+    Team* find(int key);
+    int find_ith(int key);
     void destroyNodes();
     void destroyNodesAndContent();
 
@@ -47,6 +48,7 @@ private:
 
     Node* root;
     int length;
+    bool is_sorted_by_id;
 
     void stabilizeTree(Node* node, bool is_insert=true);
     int getBfValue(Node* node);
@@ -56,31 +58,29 @@ private:
     void LRRotation(Node* node);
     void UpdateTilRoot(Node* start);
     StatusType insertValue(int key, Team* value);
+    StatusType InsertKey(int key, Team *value);
     void innerDestroyNodes(Node* current_node);
     void innerDestroyNodesAndContent(Node* current_node);
     int getHeight(Node *node);
 
-    Node* findNodeByTheSameId(Node* current_root, Team* value_to_find){
+    Node* findNodeByTheSameId(Node* current_root, int key) {
         if (current_root == nullptr) {
             return nullptr;
         }
-        Team* temp = current_root->value;
-        if (temp->getTotalAbility() == value_to_find->getTotalAbility()) {
-            while ((current_root->right_son != nullptr) && (current_root->right_son->value->getTotalAbility() == value_to_find->getTotalAbility())) {
-                current_root = current_root->right_son;
-            }
+        Team *temp = current_root->value;
+        if (temp->getID() == key) {
             return current_root;
         }
-        if (temp->getTotalAbility() > value_to_find->getTotalAbility()){
-            if (current_root->left_son == nullptr){
+        if (temp->getID() > key) {
+            if (current_root->left_son == nullptr) {
                 return current_root;
             }
-            return findNodeByTheSameId(current_root->left_son, value_to_find);
+            return findNodeByTheSameId(current_root->left_son, key);
         }
         if (current_root->right_son == nullptr) {
             return current_root;
         }
-        return findNodeByTheSameId(current_root->right_son, value_to_find);
+        return findNodeByTheSameId(current_root->right_son, key);
     }
 
     Node* findNodeByValue(Node* current_root, Team* value_to_find){
