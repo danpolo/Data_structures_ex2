@@ -317,5 +317,5 @@ int RankedTree::find_ith(int i){
     if (is_sorted_by_id){
         return ans->getID();
     }
-    return ans->getTotalAbility();
+    return findNodeWithHighestID(root, ans->getTotalAbility())->key;
 }

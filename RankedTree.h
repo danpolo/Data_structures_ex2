@@ -83,6 +83,38 @@ private:
         return findNodeByTheSameId(current_root->right_son, key);
     }
 
+    Node* findNodeWithHighestID(Node* current_root, int ability){
+        if (current_root == nullptr){
+            return nullptr;
+        }
+        int temp_ability = current_root->value->getTotalAbility();
+        if (temp_ability == ability){
+            while (current_root->right_son != nullptr){
+                if (current_root->right_son->value->getTotalAbility() == ability){
+                    current_root = current_root->right_son;
+                    continue;
+                }
+                if ((current_root->right_son->left_son != nullptr) &&
+                (current_root->right_son->left_son->value->getTotalAbility() == ability)){
+                    current_root = current_root->right_son->left_son;
+                    continue;
+                }
+                return current_root;
+            }
+            return current_root;
+        }
+        if (temp_ability < ability){
+            if (current_root->right_son == nullptr){
+                return current_root;
+            }
+            return findNodeWithHighestID(current_root->right_son, ability);
+        }
+        if (current_root->left_son == nullptr){
+            return current_root;
+        }
+        return findNodeWithHighestID(current_root->left_son, ability);
+    }
+
     Node* findNodeByValue(Node* current_root, Team* value_to_find){
         if (current_root == nullptr) {
             return nullptr;
