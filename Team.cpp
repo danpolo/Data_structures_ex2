@@ -2,7 +2,7 @@
 
 Team::Team(int teamID) : teamID(teamID), m_points(0), m_total_ability(0),
                          m_games_played(0), m_number_of_players(0), is_valid(false),
-                         m_team_spirit(), first_player(nullptr), last_player(nullptr) {}
+                         m_team_spirit(new permutation_t(permutation_t::invalid())), first_player(nullptr), last_player(nullptr) {}
 
 
 Team::~Team() {
@@ -101,21 +101,21 @@ void Team::addGoalKeeper() {
     is_valid = true;
 }
 
-const permutation_t &Team::getTeamSpirit() const {
-    return m_team_spirit;
+permutation_t Team::getTeamSpirit() const {
+    return *m_team_spirit;
 }
 
-void Team::updateTeamSpirit(const permutation_t &new_spirit) {
-    if (not m_team_spirit.isvalid()) {
-        m_team_spirit = new_spirit;
+void Team::updateTeamSpirit(permutation_t* new_spirit) {
+    if (not m_team_spirit->isvalid()) {
+        m_team_spirit = new permutation_t(*new_spirit);
     }
     else {
-        m_team_spirit = m_team_spirit * new_spirit;
+        (*m_team_spirit) = (*m_team_spirit) * (*new_spirit);
     }
 }
 
 int Team::getTeamSpiritStrength() const {
-    return m_team_spirit.strength();
+    return m_team_spirit->strength();
 }
 
 Player *Team::getFirstPlayer() const {

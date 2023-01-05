@@ -52,7 +52,7 @@ private:
     public:
         NodePlayer(int key, Player* value): key(key), value(value), father_player(nullptr), father_team(nullptr),
                                             num_of_sons_in_subtree(1),
-                                            partial_perm(permutation_t(value->getSpirit().inv())),
+                                            partial_perm(new permutation_t(value->getSpirit().inv())),
                                             games_played_of_team(0){}
         NodePlayer(const NodePlayer& node) = default;
         NodePlayer& operator=(const NodePlayer& node) = default;
@@ -62,7 +62,7 @@ private:
         void setKey(int other_key){ key = other_key;}
         void setValue(Player* other_value){ value = other_value;}
         void addGamesPlayedToNode(int added){ games_played_of_team += added;}
-        void setPartial(const permutation_t& partial){ partial_perm = partial;}
+        void setPartial(permutation_t* partial){ *partial_perm = *partial;}
 
         int key;
         Player* value;
@@ -70,7 +70,7 @@ private:
         NodeTeam* father_team;
         bool is_root;
         int num_of_sons_in_subtree;
-        permutation_t partial_perm;
+        permutation_t* partial_perm;
         int games_played_of_team;
     };
 

@@ -15,7 +15,7 @@ public:
     int getID() const;
     void setID(int id);
     int getGamesPlayed() const;
-    const permutation_t &getTeamSpirit() const;
+    permutation_t getTeamSpirit() const;
     int getNumberOfPlayers() const;
     void addNumberOfPlayers(int added);
     bool isValidTeam() const;
@@ -26,7 +26,7 @@ public:
     void addTotalAbility(int ability);
     void addGamesPlayed(int games_played);
     void addGoalKeeper();
-    void updateTeamSpirit(const permutation_t &new_spirit);
+    void updateTeamSpirit(permutation_t* new_spirit);
     void setFirstPlayer(Player* f_ply);
     void setLastPlayer(Player* l_ply);
 
@@ -49,7 +49,7 @@ private:
     int m_games_played;
     int m_number_of_players;
     bool is_valid;
-    permutation_t m_team_spirit;
+    permutation_t* m_team_spirit;
     Player* first_player;
     Player* last_player;
 

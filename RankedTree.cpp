@@ -282,6 +282,9 @@ StatusType RankedTree::remove(Team* value) {
 Team *RankedTree::find(int key) {
     if (is_sorted_by_id){
         Node* temp = findNodeByTheSameId(root, key);
+        if (temp == nullptr){
+            return nullptr;
+        }
         if (temp->key == key) {
             return temp->value;
         }
@@ -317,5 +320,5 @@ int RankedTree::find_ith(int i){
     if (is_sorted_by_id){
         return ans->getID();
     }
-    return findNodeWithHighestID(root, ans->getTotalAbility())->key;
+    return ans->getID();
 }

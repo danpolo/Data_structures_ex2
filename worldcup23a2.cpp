@@ -77,12 +77,13 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
     try {
         Team* new_player_team = m_teams_dictionary.find(teamId);
         int updated_games_played = gamesPlayed - new_player_team->getGamesPlayed();
-        Player* new_player = new Player(playerId, teamId, spirit, updated_games_played, ability,
+        permutation_t* temp_spirit =  new permutation_t(spirit);
+        Player* new_player = new Player(playerId, teamId, temp_spirit, updated_games_played, ability,
                                                                                 cards, goalKeeper);
         m_all_players_dictionary.insert(new_player, new_player_team);
         m_teams_by_ability.remove(new_player_team);  //might be complexity problem
         new_player_team->addTotalAbility(ability);
-        new_player_team->updateTeamSpirit(spirit);
+        new_player_team->updateTeamSpirit(temp_spirit);
         new_player_team->addNumberOfPlayers(1);
         if (goalKeeper) {
             new_player_team->addGoalKeeper();
@@ -211,11 +212,11 @@ output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
     if (m_all_players_dictionary.findPlayer(playerId) == nullptr){
         return StatusType::FAILURE;
     }
-    permutation_t ans = m_all_players_dictionary.getPartialPermutation(playerId);
-    if (!ans.isvalid()){
+    permutation_t* ans = new permutation_t(m_all_players_dictionary.getPartialPermutation(playerId));
+    if (!ans->isvalid()){
         return StatusType::FAILURE;
     }
-    return ans;
+    return *ans;
 }
 
 StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
@@ -235,15 +236,20 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     }
     if (team1->getNumberOfPlayers() == 0){
         m_teams_dictionary.remove(team2);
+        m_teams_by_ability.remove(team2);
         m_all_players_dictionary.upTreeUnion(team1, team2);
         m_teams_dictionary.remove(team1);
         m_teams_by_ability.remove(team1);
         m_number_of_teams -= 1;
         m_teams_dictionary.insert(team2->getID(), team2); //sorted by id
+        m_teams_by_ability.insert(team2->getID(), team2);
         return StatusType::SUCCESS;
     }
+    m_teams_by_ability.remove(team1);
     m_all_players_dictionary.upTreeUnion(team1, team2);
     team1->addNumberOfPlayers(team2->getNumberOfPlayers());
+    team1->addTotalAbility(team2->getTotalAbility());
+    m_teams_by_ability.insert(team1->getID(), team1);
     m_number_of_teams -= 1;
     m_teams_dictionary.remove(team2);
     m_teams_by_ability.remove(team2);

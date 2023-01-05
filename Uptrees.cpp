@@ -104,22 +104,28 @@ Team *Uptrees::findTeam(int player_id) {
     }
     NodePlayer* player_node = array_of_players[index];
     NodePlayer* found_player = player_node;
+    int sum_games = found_player->value->getGamesPlayed() + found_player->games_played_of_team;
 
-    permutation_t ans = permutation_t::neutral();
+    permutation_t* ans = new permutation_t(permutation_t::neutral());
     while (found_player->father_team == nullptr) {
-        ans = ans * found_player->partial_perm;
+        (*ans) = (*ans) * (*found_player->partial_perm);
         found_player = found_player->father_player;
+        sum_games += found_player->games_played_of_team;
     }
 
     NodePlayer* next_player = player_node->father_player;
-    permutation_t last_partial = player_node->partial_perm;
+    permutation_t* last_partial = new permutation_t(*player_node->partial_perm);
+    int temp_sum = 0;
     while (player_node->father_team == nullptr) {
         player_node->setFatherPlayer(found_player);
-        player_node->value->addGamesPlayed(-1*(found_player->games_played_of_team));
+        temp_sum = sum_games - found_player->games_played_of_team - player_node->value->getGamesPlayed();
+        sum_games = sum_games - player_node->value->getGamesPlayed() + next_player->value->getGamesPlayed();
+        player_node->value->addGamesPlayed(temp_sum);
         player_node->setPartial(ans);
-        ans = (ans.inv() * last_partial.inv()).inv();
+        *ans = (ans->inv() * (*last_partial)).inv();
         player_node = next_player;
-        last_partial = player_node->partial_perm;
+        delete last_partial;
+        last_partial = new permutation_t(*player_node->partial_perm);
         next_player = player_node->father_player;
     }
     return player_node->father_team->value;
@@ -146,13 +152,16 @@ void Uptrees::upTreeUnion(Team *bigger_team, Team *smaller_team) {
     NodePlayer* first_player_of_bigger_team_node = array_of_players[hashID
                                                                     (first_player_of_bigger_team,
                                                                      true, array_of_players)];
+    int last_player_of_smaller_team = smaller_team->getLastPlayer()->getPlayerId();
     NodeTeam* new_root = first_player_of_bigger_team_node->father_team;
+    new_root->value->setLastPlayer(smaller_team->getLastPlayer());
     new_root->value->addPoints(first_player_of_smaller_team_node->father_team->value->getPoints());
     new_root->addNumOfSonsInSubTree
     (first_player_of_smaller_team_node->father_team->num_of_sons_in_subtree);
     first_player_of_smaller_team_node->addGamesPlayedToNode(-1*(first_player_of_bigger_team_node->games_played_of_team));
     delete first_player_of_smaller_team_node->father_team;
     first_player_of_smaller_team_node->setFatherTeam(nullptr);
+    findTeam(last_player_of_smaller_team);
 }
 
 void Uptrees::removeTeamFromPlayer(int player_id) {
@@ -187,13 +196,13 @@ permutation_t Uptrees::getPartialPermutation(int player_id) {
     findTeam(player_id);
     int index = hashID(player_id, true, array_of_players);
     NodePlayer* found_player = array_of_players[index];
-    permutation_t ans = found_player->partial_perm;
+    permutation_t* ans = new permutation_t(*found_player->partial_perm);
     while (found_player->father_team == nullptr){
         found_player = found_player->father_player;
-        ans = ans * found_player->partial_perm;
+        (*ans) = (*ans) * (*found_player->partial_perm);
     }
     if (found_player->father_team->key == REMOVED_TEAM){
         return permutation_t::invalid();
     }
-    return ans.inv();
+    return ans->inv();
 }

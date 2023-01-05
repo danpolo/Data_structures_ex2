@@ -7,7 +7,7 @@
 
 class Player {
 public:
-    Player(int player_id, int team_id, const permutation_t &spirit, int games_played, int
+    Player(int player_id, int team_id, permutation_t* spirit, int games_played, int
     ability, int cards, bool is_GK);
 
     ~Player() = default;
@@ -38,7 +38,7 @@ public:
 private:
     int player_id;
     int team_id;
-    const permutation_t &spirit;
+    permutation_t* spirit;
     int games_played;
     int ability;
     int cards;

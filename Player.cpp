@@ -1,7 +1,7 @@
 #include "Player.h"
 
 
-Player::Player(int player_id, int team_id, const permutation_t &spirit, int games_played,
+Player::Player(int player_id, int team_id, permutation_t* spirit, int games_played,
                int ability, int cards, bool is_GK) :  player_id(player_id), team_id(team_id), spirit
                (spirit), games_played(games_played), ability(ability), cards(cards), is_GK(is_GK){
 }
@@ -15,7 +15,7 @@ int Player::getTeamID() const{
 }
 
 permutation_t Player::getSpirit() const {
-    return spirit;
+    return *spirit;
 }
 
 void Player::addCards(int addCards) {
