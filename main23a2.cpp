@@ -47,7 +47,7 @@ int main()
 	while (cin >> op)
 	{
         counter++;
-        if ((counter == 2360) || (counter == 838)){
+        if ((counter == 77000) || (counter == 844) || (counter == 1258) || (counter == 1265)){
             counter++;
             counter--;
         }

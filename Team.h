@@ -21,6 +21,8 @@ public:
     bool isValidTeam() const;
     Player* getFirstPlayer() const;
     Player* getLastPlayer() const;
+    int getBalanace() const;
+    void setBalance(int bal);
 
     void addPoints(int points);
     void addTotalAbility(int ability);
@@ -52,6 +54,7 @@ private:
     permutation_t* m_team_spirit;
     Player* first_player;
     Player* last_player;
+    int balance;
 
     int getTeamValue() const;   //points + strength
     int getTeamSpiritStrength() const;

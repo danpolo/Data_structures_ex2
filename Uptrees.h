@@ -19,7 +19,9 @@ public:
     ~Uptrees();
 
     Player* findPlayer(int player_id) const;
-    Team* findTeam(int player_id);
+    int playerGamesPlayedNode(int player_id) const;
+    bool isFirstOfSomeTeam(int player_id) const;
+    Team* findTeam(int player_id, bool is_buy);
     void upTreeUnion(Team* bigger_team, Team* smaller_team);
     void insert(Player* player, Team* team);
     void removeTeamFromPlayer(int player_id);

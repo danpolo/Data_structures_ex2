@@ -2,7 +2,7 @@
 
 Team::Team(int teamID) : teamID(teamID), m_points(0), m_total_ability(0),
                          m_games_played(0), m_number_of_players(0), is_valid(false),
-                         m_team_spirit(new permutation_t(permutation_t::invalid())), first_player(nullptr), last_player(nullptr) {}
+                         m_team_spirit(new permutation_t(permutation_t::invalid())), first_player(nullptr), last_player(nullptr), balance(0) {}
 
 
 Team::~Team() {
@@ -11,6 +11,14 @@ Team::~Team() {
 
 int Team::getTeamValue() const {
     return m_total_ability + m_points;
+}
+
+int Team::getBalanace() const {
+    return balance;
+}
+
+void Team::setBalance(int bal) {
+    balance = bal;
 }
 
 int Team::getGamesPlayed() const {
@@ -36,22 +44,6 @@ int Team::getTotalAbility() const {
 void Team::addPoints(int points) {
     m_points += points;
 }
-
-//void Team::move_all_players(Team *team2) {
-//    Player** moving_players_begin = team2->m_dict_of_players_in_team.inorderNodesByValue();
-//    Player** moving_players = moving_players_begin;
-//    int number_of_players_to_move = team2->getNumberOfPlayers();
-//    int i = 0;
-//    while (i < number_of_players_to_move){
-//        (*moving_players)->addGamesPlayed(team2->m_games_played);
-//        add_player_in_team((*moving_players)->getPlayerId(), *moving_players);
-//        (*moving_players)->setTeamID(getID());
-//        team2->remove_player_in_team((*moving_players)->getPlayerId(), *moving_players);
-//        i++;
-//        moving_players++;
-//    }
-//    delete[] moving_players_begin;
-//}
 
 bool Team::operator>(const Team &other) const {
     if (getTotalAbility() > other.getTotalAbility()) {

@@ -10,6 +10,8 @@
 #include "Player.h"
 #include "worldcup23a2.h"
 
+#define REQUIRE(x)
+
 #define ASSERT_WITHOUT_MSG(action, expected) if(action != expected) return false
 #define ASSERT_WITH_MSG(action, expected, msg) \
                     if(action != expected){std::cout<<"\033[1;33m"<<msg<<"\033[0m";return false;}
@@ -211,7 +213,7 @@ bool playMatch(bool test = false) {
     return true;
 }
 
-int main() {
+int main2() {
     std::cout << "Ignore this (Its for the colors)-> ";
     system(("chcp " + std::to_string(CP_UTF8)).c_str());
     std::cout << std::string(MAX_LINE_LENGTH + 28, '-') << std::endl;
@@ -237,4 +239,102 @@ int main() {
     }
 
     return 0;
+}
+
+int main(){
+    int basePerm[5] = {1, 2, 3, 4, 0};
+    permutation_t perm = permutation_t(basePerm).inv();
+
+    world_cup_t *obj = new world_cup_t();
+
+    StatusType res = obj->add_team(10);
+    REQUIRE(res == StatusType::SUCCESS);
+    res = obj->add_player(11, 10, perm, 1, 1, 1, true);
+    (res == StatusType::SUCCESS);
+
+    output_t<int> resn20 = obj->num_played_games_for_player(11);
+     (resn20.status() == StatusType::SUCCESS);
+    REQUIRE(resn20.ans() == 1);
+
+    res = obj->add_team(20);
+    REQUIRE(res == StatusType::SUCCESS);
+    res = obj->add_player(21, 20, perm, 1, 3, 1, true);
+    REQUIRE(res == StatusType::SUCCESS);
+
+    res = obj->add_team(30);
+    REQUIRE(res == StatusType::SUCCESS);
+    res = obj->add_player(31, 30, perm, 1, 6, 1, true);
+    REQUIRE(res == StatusType::SUCCESS);
+
+    output_t<int> resn1 = obj->play_match(10, 20);
+    REQUIRE(resn1.status() == StatusType::SUCCESS);
+    REQUIRE(resn1.ans() == 3);
+
+    output_t<int> resn21 = obj->num_played_games_for_player(11);
+    REQUIRE(resn21.status() == StatusType::SUCCESS);
+    REQUIRE(resn21.ans() == 2);
+
+    res = obj->buy_team(10, 20);
+    REQUIRE(res == StatusType::SUCCESS);
+
+    output_t<int> resn22 = obj->num_played_games_for_player(11);
+    REQUIRE(resn22.status() == StatusType::SUCCESS);
+    REQUIRE(resn22.ans() == 2);
+
+    output_t<int> resn2 = obj->get_team_points(10);
+    REQUIRE(resn2.status() == StatusType::SUCCESS);
+    REQUIRE(resn2.ans() == 3);
+
+    output_t<int> resn3 = obj->get_team_points(20);
+    REQUIRE(resn3.status() == StatusType::FAILURE);
+
+    output_t<int> resn4 = obj->get_ith_pointless_ability(1);
+    REQUIRE(resn4.status() == StatusType::SUCCESS);
+    REQUIRE(resn4.ans() == 30);
+
+    output_t<int> resn5 = obj->play_match(10, 30);
+    REQUIRE(resn5.status() == StatusType::SUCCESS);
+    REQUIRE(resn5.ans() == 1);
+
+    output_t<int> resn23 = obj->num_played_games_for_player(11);
+    REQUIRE(resn23.status() == StatusType::SUCCESS);
+    REQUIRE(resn23.ans() == 3);
+
+    obj->add_player(32, 30, perm, 1, 4, 1, true);
+
+    output_t<int> resn6 = obj->play_match(10, 30);
+    REQUIRE(resn6.status() == StatusType::SUCCESS);
+    REQUIRE(resn6.ans() == 0);
+    output_t<int> resn24 = obj->num_played_games_for_player(11);
+    REQUIRE(resn24.status() == StatusType::SUCCESS);
+    REQUIRE(resn24.ans() == 4);
+
+    res = obj->buy_team(30, 10);
+    REQUIRE(res == StatusType::SUCCESS);
+
+    // Partial spirit is correct
+    output_t<permutation_t> resn7 = obj->get_partial_spirit(31);
+    REQUIRE(resn7.status() == StatusType::SUCCESS);
+    REQUIRE(str(resn7.ans()) == str(perm));
+
+    output_t<permutation_t> resn8 = obj->get_partial_spirit(11);
+    REQUIRE(resn8.status() == StatusType::SUCCESS);
+    REQUIRE(str(resn8.ans()) == str(perm * perm * perm));
+
+    // Num played games is correct
+    output_t<int> resn10 = obj->num_played_games_for_player(11);
+    REQUIRE(resn10.status() == StatusType::SUCCESS);
+    REQUIRE(resn10.ans() == 4);
+
+    output_t<int> resn11 = obj->num_played_games_for_player(21);
+    REQUIRE(resn11.status() == StatusType::SUCCESS);
+    REQUIRE(resn11.ans() == 4);
+
+    output_t<int> resn12 = obj->num_played_games_for_player(31);
+    REQUIRE(resn12.status() == StatusType::SUCCESS);
+    REQUIRE(resn12.ans() == 3);
+
+    output_t<int> resn13 = obj->num_played_games_for_player(32);
+    REQUIRE(resn13.status() == StatusType::SUCCESS);
+    REQUIRE(resn13.ans() == 2);
 }

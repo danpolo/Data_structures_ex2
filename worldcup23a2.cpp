@@ -76,14 +76,14 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
 
     try {
         Team* new_player_team = m_teams_dictionary.find(teamId);
-        int updated_games_played = gamesPlayed - new_player_team->getGamesPlayed();
         permutation_t* temp_spirit =  new permutation_t(spirit);
-        Player* new_player = new Player(playerId, teamId, temp_spirit, updated_games_played, ability,
+        Player* new_player = new Player(playerId, teamId, temp_spirit, gamesPlayed, ability,
                                                                                 cards, goalKeeper);
         m_all_players_dictionary.insert(new_player, new_player_team);
         m_teams_by_ability.remove(new_player_team);  //might be complexity problem
         new_player_team->addTotalAbility(ability);
-        new_player_team->updateTeamSpirit(temp_spirit);
+        permutation_t* added_spirit = new permutation_t(*temp_spirit);
+        new_player_team->updateTeamSpirit(added_spirit);
         new_player_team->addNumberOfPlayers(1);
         if (goalKeeper) {
             new_player_team->addGoalKeeper();
@@ -127,9 +127,10 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2) {
             second_team->addPoints(MATCH_WIN_POINTS);
             break;
     }
-
     first_team->addGamesPlayed(1);
     second_team->addGamesPlayed(1);
+    first_team->setBalance(first_team->getBalanace() + 1);
+    second_team->setBalance(second_team->getBalanace() + 1);
     m_all_players_dictionary.addGamesPlayedOnlyToFirst(first_team->getFirstPlayer());
     m_all_players_dictionary.addGamesPlayedOnlyToFirst(second_team->getFirstPlayer());
 
@@ -141,12 +142,12 @@ output_t<int> world_cup_t::num_played_games_for_player(int playerId) {
         return StatusType::INVALID_INPUT;
     }
 
-    Player* player = m_all_players_dictionary.findPlayer(playerId);
+    Player *player = m_all_players_dictionary.findPlayer(playerId);
     if (player == nullptr) {
         return StatusType::FAILURE;
     }
 
-    Team* team = m_all_players_dictionary.findTeam(playerId);
+    Team *team = m_all_players_dictionary.findTeam(playerId, false);
 
     int team_games_played;
     if (team == nullptr) {
@@ -155,7 +156,11 @@ output_t<int> world_cup_t::num_played_games_for_player(int playerId) {
         team_games_played = team->getGamesPlayed();
     }
 
-    return player->getGamesPlayed() + team_games_played;
+    int games_player_from_node = m_all_players_dictionary.playerGamesPlayedNode(playerId);
+    if (m_all_players_dictionary.isFirstOfSomeTeam(playerId)) {
+        return player->getGamesPlayed() + team_games_played;
+    }
+    return player->getGamesPlayed() + team_games_played + games_player_from_node;
 }
 
 StatusType world_cup_t::add_player_cards(int playerId, int cards) {
@@ -164,7 +169,7 @@ StatusType world_cup_t::add_player_cards(int playerId, int cards) {
     }
 
     Player* player = m_all_players_dictionary.findPlayer(playerId);
-    if (player == nullptr or m_all_players_dictionary.findTeam(playerId) == nullptr) {
+    if (player == nullptr or m_all_players_dictionary.findTeam(playerId, false) == nullptr) {
         return StatusType::FAILURE;
     }
 
@@ -249,6 +254,12 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     m_all_players_dictionary.upTreeUnion(team1, team2);
     team1->addNumberOfPlayers(team2->getNumberOfPlayers());
     team1->addTotalAbility(team2->getTotalAbility());
+    team1->setBalance(team2->getBalanace());
+    permutation_t* added_team_spirit = new permutation_t(team2->getTeamSpirit());
+    team1->updateTeamSpirit(added_team_spirit);
+    if (team2->isValidTeam()){
+        team1->addGoalKeeper();
+    }
     m_teams_by_ability.insert(team1->getID(), team1);
     m_number_of_teams -= 1;
     m_teams_dictionary.remove(team2);
