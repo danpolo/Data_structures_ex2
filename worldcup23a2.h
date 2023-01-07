@@ -20,6 +20,7 @@
 #include "Player.h"
 #include "Team.h"
 #include "RankedTree.h"
+#include <ctime>
 
 class world_cup_t {
 private:

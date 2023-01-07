@@ -11,7 +11,8 @@ world_cup_t::world_cup_t() : m_teams_dictionary(RankedTree(true)),
 }
 
 world_cup_t::~world_cup_t() {
-    // TODO: Your code goes here
+    m_teams_by_ability.destroyNodes();
+    m_teams_dictionary.destroyNodesAndContent();
 }
 
 StatusType world_cup_t::add_team(int teamId) {
@@ -58,6 +59,7 @@ StatusType world_cup_t::remove_team(int teamId) {
     }
     m_number_of_teams -= 1;
     m_teams_by_ability.remove(removed_team);
+    delete removed_team;
     return StatusType::SUCCESS;
 }
 
@@ -84,6 +86,7 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
         new_player_team->addTotalAbility(ability);
         permutation_t* added_spirit = new permutation_t(*temp_spirit);
         new_player_team->updateTeamSpirit(added_spirit);
+        delete added_spirit;
         new_player_team->addNumberOfPlayers(1);
         if (goalKeeper) {
             new_player_team->addGoalKeeper();
@@ -219,9 +222,12 @@ output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
     }
     permutation_t* ans = new permutation_t(m_all_players_dictionary.getPartialPermutation(playerId));
     if (!ans->isvalid()){
+        delete ans;
         return StatusType::FAILURE;
     }
-    return *ans;
+    permutation_t return_ans = *ans;
+    delete ans;
+    return return_ans;
 }
 
 StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
@@ -237,6 +243,7 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
         m_teams_dictionary.remove(team2);
         m_teams_by_ability.remove(team2);
         m_number_of_teams -= 1;
+        delete team2;
         return StatusType::SUCCESS;
     }
     if (team1->getNumberOfPlayers() == 0){
@@ -248,6 +255,7 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
         m_number_of_teams -= 1;
         m_teams_dictionary.insert(team2->getID(), team2); //sorted by id
         m_teams_by_ability.insert(team2->getID(), team2);
+        delete team1;
         return StatusType::SUCCESS;
     }
     m_teams_by_ability.remove(team1);
@@ -257,6 +265,7 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     team1->setBalance(team2->getBalanace());
     permutation_t* added_team_spirit = new permutation_t(team2->getTeamSpirit());
     team1->updateTeamSpirit(added_team_spirit);
+    delete added_team_spirit;
     if (team2->isValidTeam()){
         team1->addGoalKeeper();
     }
@@ -264,6 +273,7 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     m_number_of_teams -= 1;
     m_teams_dictionary.remove(team2);
     m_teams_by_ability.remove(team2);
+    delete team2;
     return StatusType::SUCCESS;
 }
 

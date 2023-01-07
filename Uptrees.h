@@ -58,7 +58,7 @@ private:
                                             games_played_of_team(0){}
         NodePlayer(const NodePlayer& node) = default;
         NodePlayer& operator=(const NodePlayer& node) = default;
-        ~NodePlayer() = default;
+        ~NodePlayer();
         void setFatherPlayer(NodePlayer *fat) { father_player = fat;}
         void setFatherTeam(NodeTeam* fat) { father_team = fat;}
         void setKey(int other_key){ key = other_key;}

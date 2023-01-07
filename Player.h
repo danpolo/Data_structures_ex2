@@ -10,7 +10,7 @@ public:
     Player(int player_id, int team_id, permutation_t* spirit, int games_played, int
     ability, int cards, bool is_GK);
 
-    ~Player() = default;
+    ~Player();
 
     Player(const Player &v1) = default;
 

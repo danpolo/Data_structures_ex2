@@ -9,7 +9,7 @@ const int LEAF_SON_HEIGHT = -1;
 class RankedTree {
 public:
     RankedTree(bool is_id) : root(nullptr), length(0), is_sorted_by_id(is_id){};
-
+    ~RankedTree() = default;
     StatusType insert(int key, Team* value);
     StatusType remove(Team* value);
     Team* find(int key);

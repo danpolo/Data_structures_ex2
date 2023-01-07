@@ -43,3 +43,7 @@ int Player::getGamesPlayed() const {
 bool Player::isGk() const {
     return is_GK;
 }
+
+Player::~Player() {
+    delete spirit;
+}

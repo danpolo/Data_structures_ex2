@@ -6,7 +6,7 @@ Team::Team(int teamID) : teamID(teamID), m_points(0), m_total_ability(0),
 
 
 Team::~Team() {
-
+    delete m_team_spirit;
 }
 
 int Team::getTeamValue() const {
@@ -99,6 +99,7 @@ permutation_t Team::getTeamSpirit() const {
 
 void Team::updateTeamSpirit(permutation_t* new_spirit) {
     if (not m_team_spirit->isvalid()) {
+        delete m_team_spirit;
         m_team_spirit = new permutation_t(*new_spirit);
     }
     else {

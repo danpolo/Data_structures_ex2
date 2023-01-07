@@ -109,7 +109,7 @@ void Uptrees::allocateBiggerArray() {
             biggerArray[hashID(temp_player_id, false, biggerArray)] = array_of_players[i];
         }
     }
-    delete array_of_players;
+    delete[] array_of_players;
     array_of_players = biggerArray;
 }
 
@@ -156,6 +156,8 @@ Team *Uptrees::findTeam(int player_id, bool is_buy) {
         last_partial = new permutation_t(*player_node->partial_perm);
         next_player = player_node->father_player;
     }
+    delete ans;
+    delete last_partial;
     return found_player->father_team->value;
 }
 
@@ -198,7 +200,10 @@ void Uptrees::removeTeamFromPlayer(int player_id) {
 }
 
 Uptrees::~Uptrees() {
-
+    for (int i = 0; i < size_of_array; i++) {
+        delete array_of_players[i];
+    }
+    delete[] array_of_players;
 }
 
 Uptrees::Uptrees() : array_of_players(new NodePlayer*[2]), num_of_players(0), size_of_array(2) {
@@ -227,7 +232,16 @@ permutation_t Uptrees::getPartialPermutation(int player_id) {
         (*ans) = (*ans) * (*found_player->partial_perm);
     }
     if (found_player->father_team->key == REMOVED_TEAM){
+        delete ans;
         return permutation_t::invalid();
     }
-    return ans->inv();
+    permutation_t return_ans = ans->inv();
+    delete ans;
+    return return_ans;
+}
+
+Uptrees::NodePlayer::~NodePlayer() {
+    delete value;
+    delete partial_perm;
+    delete father_team;
 }
