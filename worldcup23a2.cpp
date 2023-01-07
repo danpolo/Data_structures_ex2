@@ -6,9 +6,7 @@ const int MATCH_TIE_POINTS = 1;
 world_cup_t::world_cup_t() : m_teams_dictionary(RankedTree(true)),
                              m_all_players_dictionary(Uptrees()),
                              m_teams_by_ability(RankedTree(false)),
-                             m_number_of_teams(0){
-    std::srand(time(nullptr));
-}
+                             m_number_of_teams(0) {}
 
 world_cup_t::~world_cup_t() {
     m_teams_by_ability.destroyNodes();
@@ -42,13 +40,13 @@ StatusType world_cup_t::remove_team(int teamId) {
     if (teamId <= 0) {
         return StatusType::INVALID_INPUT;
     }
-    Team* removed_team = m_teams_dictionary.find(teamId);
+    Team *removed_team = m_teams_dictionary.find(teamId);
 
     if (removed_team == nullptr) {
         return StatusType::FAILURE;
     }
 
-    Player* first_player_of_removed_team = removed_team->getFirstPlayer();
+    Player *first_player_of_removed_team = removed_team->getFirstPlayer();
     if (first_player_of_removed_team != nullptr) {
         int first_player_id_of_removed_team = first_player_of_removed_team->getPlayerId();
         m_all_players_dictionary.removeTeamFromPlayer(first_player_id_of_removed_team);
@@ -72,19 +70,19 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
     }
 
     if (m_all_players_dictionary.findPlayer(playerId) != nullptr or m_teams_dictionary.find
-    (teamId) == nullptr) {
+            (teamId) == nullptr) {
         return StatusType::FAILURE;
     }
 
     try {
-        Team* new_player_team = m_teams_dictionary.find(teamId);
-        permutation_t* temp_spirit =  new permutation_t(spirit);
-        Player* new_player = new Player(playerId, teamId, temp_spirit, gamesPlayed, ability,
-                                                                                cards, goalKeeper);
+        Team *new_player_team = m_teams_dictionary.find(teamId);
+        permutation_t *temp_spirit = new permutation_t(spirit);
+        Player *new_player = new Player(playerId, teamId, temp_spirit, gamesPlayed, ability,
+                                        cards, goalKeeper);
         m_all_players_dictionary.insert(new_player, new_player_team);
-        m_teams_by_ability.remove(new_player_team);  //might be complexity problem
+        m_teams_by_ability.remove(new_player_team);
         new_player_team->addTotalAbility(ability);
-        permutation_t* added_spirit = new permutation_t(*temp_spirit);
+        permutation_t *added_spirit = new permutation_t(*temp_spirit);
         new_player_team->updateTeamSpirit(added_spirit);
         delete added_spirit;
         new_player_team->addNumberOfPlayers(1);
@@ -105,10 +103,10 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2) {
         return StatusType::INVALID_INPUT;
     }
 
-    Team* first_team = m_teams_dictionary.find(teamId1);
-    Team* second_team = m_teams_dictionary.find(teamId2);
+    Team *first_team = m_teams_dictionary.find(teamId1);
+    Team *second_team = m_teams_dictionary.find(teamId2);
     if (first_team == nullptr or second_team == nullptr or not first_team->isValidTeam() or not
-                                                                    second_team->isValidTeam()) {
+            second_team->isValidTeam()) {
         return StatusType::FAILURE;
     }
 
@@ -171,7 +169,7 @@ StatusType world_cup_t::add_player_cards(int playerId, int cards) {
         return StatusType::INVALID_INPUT;
     }
 
-    Player* player = m_all_players_dictionary.findPlayer(playerId);
+    Player *player = m_all_players_dictionary.findPlayer(playerId);
     if (player == nullptr or m_all_players_dictionary.findTeam(playerId, false) == nullptr) {
         return StatusType::FAILURE;
     }
@@ -185,7 +183,7 @@ output_t<int> world_cup_t::get_player_cards(int playerId) {
         return StatusType::INVALID_INPUT;
     }
 
-    Player* player = m_all_players_dictionary.findPlayer(playerId);
+    Player *player = m_all_players_dictionary.findPlayer(playerId);
     if (player == nullptr) {
         return StatusType::FAILURE;
     }
@@ -198,7 +196,7 @@ output_t<int> world_cup_t::get_team_points(int teamId) {
         return StatusType::INVALID_INPUT;
     }
 
-    Team* team = m_teams_dictionary.find(teamId);
+    Team *team = m_teams_dictionary.find(teamId);
     if (team == nullptr) {
         return StatusType::FAILURE;
     }
@@ -207,21 +205,21 @@ output_t<int> world_cup_t::get_team_points(int teamId) {
 }
 
 output_t<int> world_cup_t::get_ith_pointless_ability(int i) {
-    if ((i < 0) || (m_number_of_teams <= i)){
+    if ((i < 0) || (m_number_of_teams <= i)) {
         return StatusType::FAILURE;
     }
     return m_teams_by_ability.find_ith(i);
 }
 
 output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
-    if (playerId <= 0){
+    if (playerId <= 0) {
         return StatusType::INVALID_INPUT;
     }
-    if (m_all_players_dictionary.findPlayer(playerId) == nullptr){
+    if (m_all_players_dictionary.findPlayer(playerId) == nullptr) {
         return StatusType::FAILURE;
     }
-    permutation_t* ans = new permutation_t(m_all_players_dictionary.getPartialPermutation(playerId));
-    if (!ans->isvalid()){
+    permutation_t *ans = new permutation_t(m_all_players_dictionary.getPartialPermutation(playerId));
+    if (!ans->isvalid()) {
         delete ans;
         return StatusType::FAILURE;
     }
@@ -231,22 +229,22 @@ output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId) {
 }
 
 StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
-    if ((teamId1 <= 0) || (teamId2 <= 0) || (teamId1 == teamId2)){
+    if ((teamId1 <= 0) || (teamId2 <= 0) || (teamId1 == teamId2)) {
         return StatusType::INVALID_INPUT;
     }
-    Team* team1 = m_teams_dictionary.find(teamId1);
-    Team* team2 = m_teams_dictionary.find(teamId2);
-    if ((team1 == nullptr) || (team2 == nullptr)){
+    Team *team1 = m_teams_dictionary.find(teamId1);
+    Team *team2 = m_teams_dictionary.find(teamId2);
+    if ((team1 == nullptr) || (team2 == nullptr)) {
         return StatusType::FAILURE;
     }
-    if (team2->getNumberOfPlayers() == 0){
+    if (team2->getNumberOfPlayers() == 0) {
         m_teams_dictionary.remove(team2);
         m_teams_by_ability.remove(team2);
         m_number_of_teams -= 1;
         delete team2;
         return StatusType::SUCCESS;
     }
-    if (team1->getNumberOfPlayers() == 0){
+    if (team1->getNumberOfPlayers() == 0) {
         m_teams_dictionary.remove(team2);
         m_teams_by_ability.remove(team2);
         m_all_players_dictionary.upTreeUnion(team1, team2);
@@ -263,10 +261,10 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     team1->addNumberOfPlayers(team2->getNumberOfPlayers());
     team1->addTotalAbility(team2->getTotalAbility());
     team1->setBalance(team2->getBalanace());
-    permutation_t* added_team_spirit = new permutation_t(team2->getTeamSpirit());
+    permutation_t *added_team_spirit = new permutation_t(team2->getTeamSpirit());
     team1->updateTeamSpirit(added_team_spirit);
     delete added_team_spirit;
-    if (team2->isValidTeam()){
+    if (team2->isValidTeam()) {
         team1->addGoalKeeper();
     }
     m_teams_by_ability.insert(team1->getID(), team1);
@@ -276,7 +274,3 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2) {
     delete team2;
     return StatusType::SUCCESS;
 }
-
-//int world_cup_t::get_teams_skip_list_height() const {
-//    return m_teams_dictionary.get_height();
-//}

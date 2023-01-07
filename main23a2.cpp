@@ -43,14 +43,8 @@ int main()
 	
 	// Execute all commands in file
 	string op;
-    int counter = 0;
 	while (cin >> op)
 	{
-        counter++;
-        if ((counter == 77000) || (counter == 844) || (counter == 1258) || (counter == 1265)){
-            counter++;
-            counter--;
-        }
 		if (!op.compare("add_team"))
 		{
 			cin >> tid;

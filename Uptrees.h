@@ -1,7 +1,3 @@
-//
-// Created by itayi on 21/12/2022.
-//
-
 #ifndef WET2_UPTREES_H
 #define WET2_UPTREES_H
 
@@ -33,27 +29,20 @@ public:
 private:
     class NodeTeam {
     public:
-        NodeTeam(int key, Team* value): key(key), value(value), num_of_sons_in_subtree(0),
+        NodeTeam(int key, Team* value): key(key), value(value),
         games_played_deleted_team(ACTIVE_TEAM_GAMES_PLAYED){}
         NodeTeam(const NodeTeam& node) = default;
         NodeTeam& operator=(const NodeTeam& node) = default;
         ~NodeTeam() = default;
         void setKey(int other_key){ key = other_key;}
-        void setValue(Team* other_value){ value = other_value;}
-
-        void addNumOfSonsInSubTree(int added_sons_amount) {
-            num_of_sons_in_subtree += added_sons_amount;
-        }
 
         int key;
         Team* value;
-        int num_of_sons_in_subtree;
         int games_played_deleted_team;
     };
     class NodePlayer {
     public:
         NodePlayer(int key, Player* value): key(key), value(value), father_player(nullptr), father_team(nullptr),
-                                            num_of_sons_in_subtree(1),
                                             partial_perm(new permutation_t(value->getSpirit().inv())),
                                             games_played_of_team(0){}
         NodePlayer(const NodePlayer& node) = default;
@@ -61,8 +50,6 @@ private:
         ~NodePlayer();
         void setFatherPlayer(NodePlayer *fat) { father_player = fat;}
         void setFatherTeam(NodeTeam* fat) { father_team = fat;}
-        void setKey(int other_key){ key = other_key;}
-        void setValue(Player* other_value){ value = other_value;}
         void addGamesPlayedToNode(int added){ games_played_of_team += added;}
         void setPartial(permutation_t* partial){ *partial_perm = *partial;}
 
@@ -70,8 +57,6 @@ private:
         Player* value;
         NodePlayer* father_player;
         NodeTeam* father_team;
-        bool is_root;
-        int num_of_sons_in_subtree;
         permutation_t* partial_perm;
         int games_played_of_team;
     };

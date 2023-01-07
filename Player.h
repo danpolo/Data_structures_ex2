@@ -1,13 +1,11 @@
 #ifndef EX1_PLAYER_H
 #define EX1_PLAYER_H
 
-#include <string>
-
 #include "wet2util.h"
 
 class Player {
 public:
-    Player(int player_id, int team_id, permutation_t* spirit, int games_played, int
+    Player(int player_id, int team_id, permutation_t *spirit, int games_played, int
     ability, int cards, bool is_GK);
 
     ~Player();
@@ -24,29 +22,17 @@ public:
 
     int getGamesPlayed() const;
 
-    void addGamesPlayed(int added);
-
-    bool isGk() const;
-
-    void setTeamID(int teamID);
-
-    int getTeamID() const;
-
     permutation_t getSpirit() const;
 
 
 private:
     int player_id;
     int team_id;
-    permutation_t* spirit;
+    permutation_t *spirit;
     int games_played;
     int ability;
     int cards;
     bool is_GK;
-    //int sub;
-    //Player* closest_left;
-    //Player* closest_right;
-
 };
 
 bool operator!=(const Player &v1, const Player &v2);

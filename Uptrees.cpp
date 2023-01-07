@@ -1,37 +1,27 @@
-//
-// Created by itayi on 21/12/2022.
-//
 #include "Uptrees.h"
 
 const int REMOVED_TEAM = -1;
 const int PLAYER_NOT_FOUND = -1;
 const int PLAYER_ALREADY_EXISTS = -1;
 
-const double GOLD_FOR_HASH = ((sqrt(5) - 1)/2);
+const double GOLD_FOR_HASH = ((sqrt(5) - 1) / 2);
 
-void Uptrees::insert(Player *player, Team* team) {
-    if (size_of_array/2 < (num_of_players+1)){
+void Uptrees::insert(Player *player, Team *team) {
+    if (size_of_array / 2 < (num_of_players + 1)) {
         allocateBiggerArray();
     }
     int index = hashID(player->getPlayerId(), false, array_of_players);
-    NodePlayer* player_gets_in = new NodePlayer(player->getPlayerId(), player);
-    player_gets_in->addGamesPlayedToNode(-1*(team->getBalanace()));
+    NodePlayer *player_gets_in = new NodePlayer(player->getPlayerId(), player);
+    player_gets_in->addGamesPlayedToNode(-1 * (team->getBalanace()));
     team->setBalance(0);
     array_of_players[index] = player_gets_in;
     num_of_players++;
-    if (team->getLastPlayer() == nullptr){
-        NodeTeam* team_node = new NodeTeam(team->getID(), team);
+    if (team->getLastPlayer() == nullptr) {
+        NodeTeam *team_node = new NodeTeam(team->getID(), team);
         player_gets_in->setFatherTeam(team_node);
-        team_node->addNumOfSonsInSubTree(1);
-    }
-    else {
+    } else {
         int last_player_id = team->getLastPlayer()->getPlayerId();
         player_gets_in->setFatherPlayer(array_of_players[hashID(last_player_id, true, array_of_players)]);
-        NodePlayer* player_node = player_gets_in;      //can access the first player of a team and then to team node
-        while (player_node->father_team == nullptr) {
-            player_node = player_node->father_player;
-        }
-        player_node->father_team->addNumOfSonsInSubTree(1);
     }
     team->setLastPlayer(player);
     if (team->getFirstPlayer() == nullptr) {
@@ -39,7 +29,7 @@ void Uptrees::insert(Player *player, Team* team) {
     }
 }
 
-int Uptrees::hashID(int i, bool is_find, NodePlayer** players_array_to_hash) const {
+int Uptrees::hashID(int i, bool is_find, NodePlayer **players_array_to_hash) const {
     //constant hash function
     double before_frac = (i * GOLD_FOR_HASH);
     double after_frac = before_frac - long(before_frac);
@@ -47,7 +37,7 @@ int Uptrees::hashID(int i, bool is_find, NodePlayer** players_array_to_hash) con
     if (!is_find) {
         int counter = 0;
         while (players_array_to_hash[ans] != nullptr and counter < size_of_array) {
-            if (players_array_to_hash[ans]->value->getPlayerId() == i){
+            if (players_array_to_hash[ans]->value->getPlayerId() == i) {
                 return PLAYER_ALREADY_EXISTS;   //player already exist
             }
             ans++;
@@ -57,15 +47,15 @@ int Uptrees::hashID(int i, bool is_find, NodePlayer** players_array_to_hash) con
         return ans;
     }
     int counter = 0;
-    while (players_array_to_hash[ans] != nullptr and counter < size_of_array){
-        if (players_array_to_hash[ans]->value->getPlayerId() == i){
+    while (players_array_to_hash[ans] != nullptr and counter < size_of_array) {
+        if (players_array_to_hash[ans]->value->getPlayerId() == i) {
             return ans;
         }
         ans++;
         ans %= size_of_array;
         counter++;
     }
-    return PLAYER_NOT_FOUND;  //player not found
+    return PLAYER_NOT_FOUND;
 }
 
 Player *Uptrees::findPlayer(int player_id) const {
@@ -89,7 +79,7 @@ void Uptrees::addGamesPlayedOnlyToFirst(Player *player) {
 
 bool Uptrees::isFirstOfSomeTeam(int player_id) const {
     int index = hashID(player_id, true, array_of_players);
-    if (array_of_players[index]->father_player == nullptr){
+    if (array_of_players[index]->father_player == nullptr) {
         return true;
     }
     return false;
@@ -97,7 +87,7 @@ bool Uptrees::isFirstOfSomeTeam(int player_id) const {
 
 
 void Uptrees::allocateBiggerArray() {
-    NodePlayer** biggerArray = new NodePlayer*[size_of_array*2];
+    NodePlayer **biggerArray = new NodePlayer *[size_of_array * 2];
     int before_size_of_array = size_of_array;
     size_of_array *= 2;
     for (int i = 0; i < size_of_array; i++) {
@@ -112,7 +102,6 @@ void Uptrees::allocateBiggerArray() {
     delete[] array_of_players;
     array_of_players = biggerArray;
 }
-
 
 
 Team *Uptrees::findTeam(int player_id, bool is_buy) {
@@ -164,28 +153,27 @@ Team *Uptrees::findTeam(int player_id, bool is_buy) {
 void Uptrees::upTreeUnion(Team *bigger_team, Team *smaller_team) {
     int first_player_of_smaller_team = smaller_team->getFirstPlayer()->getPlayerId();
 
-    NodePlayer* first_player_of_smaller_team_node = array_of_players[hashID
-                                                                     (first_player_of_smaller_team,
-                                                                      true, array_of_players)];
+    NodePlayer *first_player_of_smaller_team_node = array_of_players[hashID
+            (first_player_of_smaller_team,
+             true, array_of_players)];
     if (bigger_team->getNumberOfPlayers() == 0) {
         first_player_of_smaller_team_node->father_team->value->setID(bigger_team->getID());
         first_player_of_smaller_team_node->father_team->setKey(bigger_team->getID());
         return;
     }
     int last_player_of_bigger_team = bigger_team->getLastPlayer()->getPlayerId();
-    NodePlayer* last_player_of_bigger_team_node = array_of_players[hashID
-                                                                   (last_player_of_bigger_team,
-                                                                    true, array_of_players)];
+    NodePlayer *last_player_of_bigger_team_node = array_of_players[hashID
+            (last_player_of_bigger_team,
+             true, array_of_players)];
     first_player_of_smaller_team_node->setFatherPlayer(last_player_of_bigger_team_node);
 
     int first_player_of_bigger_team = bigger_team->getFirstPlayer()->getPlayerId();
-    NodePlayer* first_player_of_bigger_team_node = array_of_players[hashID
-                                                                    (first_player_of_bigger_team,
-                                                                     true, array_of_players)];
-    NodeTeam* new_root = first_player_of_bigger_team_node->father_team;
+    NodePlayer *first_player_of_bigger_team_node = array_of_players[hashID
+            (first_player_of_bigger_team,
+             true, array_of_players)];
+    NodeTeam *new_root = first_player_of_bigger_team_node->father_team;
     new_root->value->setLastPlayer(smaller_team->getLastPlayer());
     new_root->value->addPoints(first_player_of_smaller_team_node->father_team->value->getPoints());
-    new_root->addNumOfSonsInSubTree(first_player_of_smaller_team_node->father_team->num_of_sons_in_subtree);
     delete first_player_of_smaller_team_node->father_team;
     first_player_of_smaller_team_node->setFatherTeam(nullptr);
     findTeam(first_player_of_smaller_team, true);
@@ -193,7 +181,7 @@ void Uptrees::upTreeUnion(Team *bigger_team, Team *smaller_team) {
 
 void Uptrees::removeTeamFromPlayer(int player_id) {
     int index = hashID(player_id, true, array_of_players);
-    NodeTeam* deleted_team_node = array_of_players[index]->father_team;
+    NodeTeam *deleted_team_node = array_of_players[index]->father_team;
     deleted_team_node->games_played_deleted_team = deleted_team_node->value->getGamesPlayed();
     deleted_team_node->key = REMOVED_TEAM;
     deleted_team_node->value = nullptr;
@@ -206,14 +194,14 @@ Uptrees::~Uptrees() {
     delete[] array_of_players;
 }
 
-Uptrees::Uptrees() : array_of_players(new NodePlayer*[2]), num_of_players(0), size_of_array(2) {
+Uptrees::Uptrees() : array_of_players(new NodePlayer *[2]), num_of_players(0), size_of_array(2) {
     array_of_players[0] = nullptr;
     array_of_players[1] = nullptr;
 }
 
 int Uptrees::getGamesPlayedDeletedTeam(int player_id) {
     int index = hashID(player_id, true, array_of_players);
-    NodePlayer* player_node = array_of_players[index];
+    NodePlayer *player_node = array_of_players[index];
 
     while (player_node->father_team == nullptr) {
         player_node = player_node->father_player;
@@ -225,13 +213,13 @@ int Uptrees::getGamesPlayedDeletedTeam(int player_id) {
 permutation_t Uptrees::getPartialPermutation(int player_id) {
     findTeam(player_id, false);
     int index = hashID(player_id, true, array_of_players);
-    NodePlayer* found_player = array_of_players[index];
-    permutation_t* ans = new permutation_t(*found_player->partial_perm);
-    while (found_player->father_team == nullptr){
+    NodePlayer *found_player = array_of_players[index];
+    permutation_t *ans = new permutation_t(*found_player->partial_perm);
+    while (found_player->father_team == nullptr) {
         found_player = found_player->father_player;
         (*ans) = (*ans) * (*found_player->partial_perm);
     }
-    if (found_player->father_team->key == REMOVED_TEAM){
+    if (found_player->father_team->key == REMOVED_TEAM) {
         delete ans;
         return permutation_t::invalid();
     }

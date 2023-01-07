@@ -7,10 +7,10 @@ int RankedTree::getHeight(RankedTree::Node *node) {
     int right_son_height = LEAF_SON_HEIGHT;
     int left_son_height = LEAF_SON_HEIGHT;
 
-    if (node->right_son != nullptr){
+    if (node->right_son != nullptr) {
         right_son_height = node->right_son->height;
     }
-    if (node->left_son != nullptr){
+    if (node->left_son != nullptr) {
         left_son_height = node->left_son->height;
     }
 
@@ -29,19 +29,16 @@ void RankedTree::stabilizeTree(RankedTree::Node *node, bool is_insert) {
     if (node->bf_value == 2) {
         if (node->left_son->bf_value == -1) {
             LRRotation(node);
-        }
-        else {
+        } else {
             LLRotation(node);
         }
         if (is_insert) {
             return;
         }
-    }
-    else if (node->bf_value == -2) {
+    } else if (node->bf_value == -2) {
         if (node->right_son->bf_value == 1) {
             RLRotation(node);
-        }
-        else {
+        } else {
             RRRotation(node);
         }
         if (is_insert) {
@@ -62,10 +59,10 @@ int RankedTree::getBfValue(RankedTree::Node *node) {
 }
 
 void RankedTree::LLRotation(RankedTree::Node *node) {
-    Node* right_son_of_left_son = node->left_son->right_son;   //right_son_...  = Ar
-    Node* father = node->father;   //original father of B
+    Node *right_son_of_left_son = node->left_son->right_son;
+    Node *father = node->father;
 
-    node->setFather(node->left_son);         //node_left_son  =  A
+    node->setFather(node->left_son);
     node->left_son->setRight(node);
     node->setLeft(right_son_of_left_son);
     if (right_son_of_left_son != nullptr) {
@@ -76,8 +73,7 @@ void RankedTree::LLRotation(RankedTree::Node *node) {
     if (father != nullptr) {
         if (father->right_son->key == node->key) {
             father->setRight(node->father);
-        }
-        else {
+        } else {
             father->setLeft(node->father);
         }
     }
@@ -92,15 +88,15 @@ void RankedTree::LLRotation(RankedTree::Node *node) {
     node->father->setHeight(getHeight(node->father));
     node->father->setBfValue(getBfValue(node->father));
     int subtree = 1;
-    if (right_son_of_left_son != nullptr){
+    if (right_son_of_left_son != nullptr) {
         subtree += right_son_of_left_son->getSizeOfSubTree();
     }
-    if (node->right_son != nullptr){
+    if (node->right_son != nullptr) {
         subtree += node->right_son->getSizeOfSubTree();
     }
     node->addToSubtree(subtree);
     subtree = 1;
-    if (node->father->left_son != nullptr){
+    if (node->father->left_son != nullptr) {
         subtree += node->father->left_son->getSizeOfSubTree();
     }
     subtree += node->getSizeOfSubTree();
@@ -108,11 +104,11 @@ void RankedTree::LLRotation(RankedTree::Node *node) {
 }
 
 void RankedTree::RRRotation(RankedTree::Node *node) {
-    Node* left_son_of_right_son = node->right_son->left_son; //left_son_.... = Al
-    Node* father = node->father;
+    Node *left_son_of_right_son = node->right_son->left_son;
+    Node *father = node->father;
 
     node->setFather(node->right_son);
-    node->right_son->setLeft(node);                   //node_right_son  =  A
+    node->right_son->setLeft(node);
     node->setRight(left_son_of_right_son);
     if (left_son_of_right_son != nullptr) {
         left_son_of_right_son->setFather(node);
@@ -122,8 +118,7 @@ void RankedTree::RRRotation(RankedTree::Node *node) {
     if (father != nullptr) {
         if (father->left_son->key == node->key) {
             father->setLeft(node->father);
-        }
-        else {
+        } else {
             father->setRight(node->father);
         }
     }
@@ -138,15 +133,15 @@ void RankedTree::RRRotation(RankedTree::Node *node) {
     node->father->setHeight(getHeight(node->father));
     node->father->setBfValue(getBfValue(node->father));
     int subtree = 1;
-    if (left_son_of_right_son != nullptr){
+    if (left_son_of_right_son != nullptr) {
         subtree += left_son_of_right_son->getSizeOfSubTree();
     }
-    if (node->left_son != nullptr){
+    if (node->left_son != nullptr) {
         subtree += node->left_son->getSizeOfSubTree();
     }
     node->addToSubtree(subtree);
     subtree = 1;
-    if (node->father->right_son != nullptr){
+    if (node->father->right_son != nullptr) {
         subtree += node->father->right_son->getSizeOfSubTree();
     }
     subtree += node->getSizeOfSubTree();
@@ -178,16 +173,15 @@ void RankedTree::UpdateTilRoot(RankedTree::Node *start) {
     }
 }
 
-StatusType RankedTree::InsertKey(int key, Team* value){
-    Node* optional_father = findNodeByTheSameId(root, value->getID());
-    if (optional_father->key == key){
+StatusType RankedTree::InsertKey(int key, Team *value) {
+    Node *optional_father = findNodeByTheSameId(root, value->getID());
+    if (optional_father->key == key) {
         return StatusType::FAILURE;
     }
-    Node* son = new Node(key, value, optional_father);
-    if (key < optional_father->key){
+    Node *son = new Node(key, value, optional_father);
+    if (key < optional_father->key) {
         optional_father->setLeft(son);
-    }
-    else{
+    } else {
         optional_father->setRight(son);
     }
     UpdateTilRoot(optional_father);
@@ -197,16 +191,15 @@ StatusType RankedTree::InsertKey(int key, Team* value){
 }
 
 StatusType RankedTree::insertValue(int key, Team *value) {
-    Node* optional_father = findNodeByValue(root, value);
-    if (optional_father->key == key){
+    Node *optional_father = findNodeByValue(root, value);
+    if (optional_father->key == key) {
         return StatusType::FAILURE;
     }
-    Node* son = new Node(key, value, optional_father);
+    Node *son = new Node(key, value, optional_father);
 
-    if (*value < *optional_father->value){
+    if (*value < *optional_father->value) {
         optional_father->setLeft(son);
-    }
-    else{
+    } else {
         optional_father->setRight(son);
     }
     UpdateTilRoot(optional_father);
@@ -216,21 +209,21 @@ StatusType RankedTree::insertValue(int key, Team *value) {
 }
 
 void RankedTree::innerDestroyNodes(RankedTree::Node *current_node) {
-    if (current_node == nullptr){
+    if (current_node == nullptr) {
         return;
     }
     innerDestroyNodes(current_node->left_son);
-    Node* right_son = current_node->right_son;
+    Node *right_son = current_node->right_son;
     delete current_node;
     innerDestroyNodes(right_son);
 }
 
 void RankedTree::innerDestroyNodesAndContent(RankedTree::Node *current_node) {
-    if (current_node == nullptr){
+    if (current_node == nullptr) {
         return;
     }
     innerDestroyNodesAndContent(current_node->left_son);
-    Node* right_son = current_node->right_son;
+    Node *right_son = current_node->right_son;
     delete current_node->value;
     delete current_node;
     innerDestroyNodesAndContent(right_son);
@@ -243,36 +236,34 @@ void RankedTree::destroyNodesAndContent() {
 void RankedTree::destroyNodes() {
     innerDestroyNodes(root);
 }
-StatusType RankedTree::insert(int key, Team* value) {
+
+StatusType RankedTree::insert(int key, Team *value) {
     try {
         if (root == nullptr) {
             root = new Node(key, value, nullptr);
             length++;
             return StatusType::SUCCESS;
-        }
-        else {
-            if (is_sorted_by_id){
+        } else {
+            if (is_sorted_by_id) {
                 return InsertKey(key, value);
             }
             return insertValue(key, value);
         }
     }
-    catch (std::bad_alloc&) {
+    catch (std::bad_alloc &) {
         return StatusType::ALLOCATION_ERROR;
     }
 }
 
 
-StatusType RankedTree::remove(Team* value) {
-    Node* temp = nullptr;
-    if (is_sorted_by_id){
+StatusType RankedTree::remove(Team *value) {
+    Node *temp = nullptr;
+    if (is_sorted_by_id) {
         temp = findNodeByTheSameId(root, value->getID());
-    }
-    else {
+    } else {
         temp = findNodeByValue(root, value);
     }
-    if (*temp->value != *value)
-    {
+    if (*temp->value != *value) {
         return StatusType::FAILURE;
     }
     removeNode(temp);
@@ -280,9 +271,9 @@ StatusType RankedTree::remove(Team* value) {
 }
 
 Team *RankedTree::find(int key) {
-    if (is_sorted_by_id){
-        Node* temp = findNodeByTheSameId(root, key);
-        if (temp == nullptr){
+    if (is_sorted_by_id) {
+        Node *temp = findNodeByTheSameId(root, key);
+        if (temp == nullptr) {
             return nullptr;
         }
         if (temp->key == key) {
@@ -292,9 +283,9 @@ Team *RankedTree::find(int key) {
     return nullptr;
 }
 
-int RankedTree::find_ith(int i){
-    Node* search = root;
-    Team* ans = nullptr;
+int RankedTree::find_ith(int i) {
+    Node *search = root;
+    Team *ans = nullptr;
     while (search != nullptr) {
         if ((search->left_son != nullptr) && (search->left_son->getSizeOfSubTree() == i)) {
             ans = search->value;
@@ -302,22 +293,20 @@ int RankedTree::find_ith(int i){
         }
         if ((search->left_son != nullptr) && (search->left_son->getSizeOfSubTree() > i)) {
             search = search->left_son;
-        }
-        else {
-            if (i == 0){
+        } else {
+            if (i == 0) {
                 ans = search->value;
                 break;
             }
             if (search->left_son != nullptr) {
                 i -= (search->left_son->getSizeOfSubTree() + 1);
-            }
-            else{
+            } else {
                 i -= 1;
             }
             search = search->right_son;
         }
     }
-    if (is_sorted_by_id){
+    if (is_sorted_by_id) {
         return ans->getID();
     }
     return ans->getID();

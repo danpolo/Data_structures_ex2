@@ -20,48 +20,46 @@
 #include "Player.h"
 #include "Team.h"
 #include "RankedTree.h"
-#include <ctime>
 
 class world_cup_t {
 private:
-	RankedTree m_teams_dictionary;
+    RankedTree m_teams_dictionary;
     Uptrees m_all_players_dictionary;
     RankedTree m_teams_by_ability;
     int m_number_of_teams;
-	
+
 public:
-	// <DO-NOT-MODIFY> {
-	
-	world_cup_t();
-	virtual ~world_cup_t();
+    // <DO-NOT-MODIFY> {
 
-    int get_teams_skip_list_height() const; //for tests
+    world_cup_t();
 
-	StatusType add_team(int teamId);
-	
-	StatusType remove_team(int teamId);
-	
-	StatusType add_player(int playerId, int teamId,
-	                      const permutation_t &spirit, int gamesPlayed,
-	                      int ability, int cards, bool goalKeeper);
-	
-	output_t<int> play_match(int teamId1, int teamId2);
-	
-	output_t<int> num_played_games_for_player(int playerId);
-	
-	StatusType add_player_cards(int playerId, int cards);
-	
-	output_t<int> get_player_cards(int playerId);
-	
-	output_t<int> get_team_points(int teamId);
-	
-	output_t<int> get_ith_pointless_ability(int i);
-	
-	output_t<permutation_t> get_partial_spirit(int playerId);
-	
-	StatusType buy_team(int teamId1, int teamId2);
-	
-	// } </DO-NOT-MODIFY>
+    virtual ~world_cup_t();
+
+    StatusType add_team(int teamId);
+
+    StatusType remove_team(int teamId);
+
+    StatusType add_player(int playerId, int teamId,
+                          const permutation_t &spirit, int gamesPlayed,
+                          int ability, int cards, bool goalKeeper);
+
+    output_t<int> play_match(int teamId1, int teamId2);
+
+    output_t<int> num_played_games_for_player(int playerId);
+
+    StatusType add_player_cards(int playerId, int cards);
+
+    output_t<int> get_player_cards(int playerId);
+
+    output_t<int> get_team_points(int teamId);
+
+    output_t<int> get_ith_pointless_ability(int i);
+
+    output_t<permutation_t> get_partial_spirit(int playerId);
+
+    StatusType buy_team(int teamId1, int teamId2);
+
+    // } </DO-NOT-MODIFY>
 };
 
 #endif // WORLDCUP23A1_H_

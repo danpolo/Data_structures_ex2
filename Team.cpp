@@ -2,7 +2,8 @@
 
 Team::Team(int teamID) : teamID(teamID), m_points(0), m_total_ability(0),
                          m_games_played(0), m_number_of_players(0), is_valid(false),
-                         m_team_spirit(new permutation_t(permutation_t::invalid())), first_player(nullptr), last_player(nullptr), balance(0) {}
+                         m_team_spirit(new permutation_t(permutation_t::invalid())), first_player(nullptr),
+                         last_player(nullptr), balance(0) {}
 
 
 Team::~Team() {
@@ -50,7 +51,7 @@ bool Team::operator>(const Team &other) const {
         return true;
     }
 
-    if (getTotalAbility() == other.getTotalAbility() && (getID() > other.getID())){
+    if (getTotalAbility() == other.getTotalAbility() && (getID() > other.getID())) {
         return true;
     }
     return false;
@@ -97,12 +98,11 @@ permutation_t Team::getTeamSpirit() const {
     return *m_team_spirit;
 }
 
-void Team::updateTeamSpirit(permutation_t* new_spirit) {
+void Team::updateTeamSpirit(permutation_t *new_spirit) {
     if (not m_team_spirit->isvalid()) {
         delete m_team_spirit;
         m_team_spirit = new permutation_t(*new_spirit);
-    }
-    else {
+    } else {
         (*m_team_spirit) = (*m_team_spirit) * (*new_spirit);
     }
 }
@@ -146,4 +146,3 @@ Team::MatchResult playMatchResult(Team *first_team, Team *second_team) {
 
     return Team::MatchResult::TIE;
 }
-
